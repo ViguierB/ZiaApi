@@ -7,6 +7,12 @@
 
 #pragma once
 
+#if defined(ZANY_ISUNIX)
+# include <dlfcn.h>
+#else
+# include <windows.h>
+#endif
+
 #include <unordered_map>
 #include <string>
 #include <memory>
@@ -21,9 +27,11 @@ public:
 
 	class AbstractModule {
 	public:
-		AbstractModule(ID uniqueId): _unique(uniqueId) {}
+		AbstractModule(): _unique(reinterpret_cast<ID>(this)) {}
+		virtual ~AbstractModule() = default;
 
-		auto	getUniqueId() const { return _unique; }
+		virtual void	init() = 0;
+		auto			getUniqueId() const { return _unique; }
 	private:
 		ID	_unique;
 	};
@@ -31,24 +39,33 @@ public:
 	inline AbstractModule	&load(std::string const &name);
 	inline void				unload(AbstractModule const &module);
 private:
-	using Hdl = 
-#	if defined(ZANY_ISUNIX)
-		void *;
-#	else
-		HINSTANCE;
-#	endif
-	static inline const ID	_generateId()
-		{ static ID nextId = 0; return ++nextId; }
+	class ModuleWrapper {
+	public:
+		using Handler =
+#		if defined(ZANY_ISUNIX)
+			void *;
+#		else
+			HINSTANCE;
+#		endif
 
-	std::unordered_map <
-		ID,
-		std::tuple <
-			void *,
-			std::unique_ptr<AbstractModule>
-		>
-	>	_modules;
+		ModuleWrapper(Handler h, AbstractModule *am)
+			: _h(h), _m(am) {}
+		~ModuleWrapper() {
+			delete _m;
+#			if defined(ZANY_ISUNIX)
+				::dlclose(_h);
+#			else
+				FreeLibrary(_h);
+#			endif
+		}
+	private:
+		Handler			_h;
+		AbstractModule	*_m;
+	};
+
+	std::unordered_map<ID, std::unique_ptr<ModuleWrapper>>	_modules;
 };
 
-
-
 }
+
+#include "Loader.ipp"

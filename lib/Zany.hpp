@@ -7,4 +7,6 @@
 
 #pragma once
 
+#include "Zany/Platform.hpp"
 #include "Zany/Entity.hpp"
+#include "Zany/Loader.hpp"

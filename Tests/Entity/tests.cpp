@@ -2,7 +2,7 @@
 #include <iostream>
 #include <cassert>
 
-int main() {
+void testsEntity() {
 	zany::Entity	obj = zany::makeObject {
 		{"key", "value"},
 		{"key2", zany::makeObject {{"obj2", 32}}},
@@ -20,7 +20,5 @@ int main() {
 		{ "key", "value" }
 	};
 
-	assert(!obj["key2"].isObject());
-
-	return (0);
+	assert(obj["key2"].isObject());
 }

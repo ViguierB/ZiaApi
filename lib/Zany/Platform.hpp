@@ -24,3 +24,18 @@ static constexpr bool isWindows = true;
 }
 
 #endif
+
+#if defined _WIN32 || defined __CYGWIN__
+  #ifdef __GNUC__
+    #define ZANY_DLL __attribute__ ((dllexport))
+  #else
+    #define ZANY_DLL __declspec(dllexport)
+  #endif
+  #pragma warning(disable: 4251)
+#else
+  #if __GNUC__ >= 4
+    #define ZANY_DLL __attribute__ ((visibility ("default")))
+  #else
+    #define ZANY_DLL
+  #endif
+#endif
