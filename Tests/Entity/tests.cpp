@@ -2,7 +2,7 @@
 #include <iostream>
 #include <cassert>
 
-void testsEntity() {
+extern "C" void testsEntity() {
 	zany::Entity	obj = zany::makeObject {
 		{"key", "value"},
 		{"key2", zany::makeObject {{"obj2", 32}}},

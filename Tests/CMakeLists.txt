@@ -22,11 +22,14 @@ include_directories(.)
 set(SRCS
 	main.cpp
 	Loader/tests.cpp
-	Entity/tests.cpp)
+	Entity/tests.cpp
+	ThreadPool/tests.cpp)
 
 link_directories(.)
 add_executable(${NAME} ${SRCS})
 target_link_libraries(${NAME} ${CMAKE_DL_LIBS})
+find_package(Threads)
+target_link_libraries(${NAME} ${CMAKE_THREAD_LIBS_INIT})
 
 project(SimpleModule)
 add_library(SimpleModule SHARED Loader/SimpleModule.cpp)
