@@ -114,10 +114,10 @@ void	ThreadPool::_entrypoint() {
 	std::unique_lock<decltype(mtx)>	ulock(mtx);
 	while (_continue) {
 		Handler	hdl;
-		while (({
+		while ([&] {
 			std::lock_guard<decltype(_lockPeek)>	_guard(_lockPeek);
-			(_handlers.size() == 0 && _continue);
-		})) _readyNotifier.wait(ulock);
+			return (_handlers.size() == 0 && _continue);
+		}()) _readyNotifier.wait(ulock);
 		if (!_continue) break;
 		{
 			std::lock_guard<decltype(_lockPeek)>	_guard(_lockPeek);

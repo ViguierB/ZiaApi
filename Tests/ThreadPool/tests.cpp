@@ -5,7 +5,7 @@ extern "C" int testsThreadPool() {
 	zany::ThreadPool	pool(80);
 	std::mutex			mtx;
 
-	for (auto i = 0; i < 100; ++i) {
+	for (auto i = 0; i < 10000; ++i) {
 		pool.runTask([i, &mtx, &pool] {
 			for (auto j = 0; j < 10; ++j) {
 				//std::this_thread::sleep_for(std::chrono::milliseconds(100));
