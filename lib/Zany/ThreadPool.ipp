@@ -14,7 +14,7 @@
 #if defined(ZANY_ISUNIX)
 	#include <signal.h>
 #else
-
+	#include <Windows.h>
 #endif
 
 namespace zany {
@@ -52,6 +52,7 @@ void	ThreadPool::abort() {
 				pthread_kill(t.native_handle(), SIGKILL);
 #			else
 				TerminateThread(t.native_handle(), 0);
+				CloseHandle(t.native_handle());
 #			endif
 		}
 	}
