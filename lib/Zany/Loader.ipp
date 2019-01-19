@@ -15,7 +15,7 @@ Loader::AbstractModule &Loader::load(std::string const &filename) {
 	AbstractModule			*(*entrypoint)();
 	ModuleWrapper::Handler	ptr = 
 #	if defined(ZANY_ISUNIX)
-		::dlopen(filename.c_str(), RTLD_LAZY);
+		::dlopen(filename.c_str(), RTLD_LAZY); // If you have a leak here, it's a libdl issue (https://bugzilla.redhat.com/show_bug.cgi?id=1624387)
 #	else
 		LoadLibrary(filename.c_str());
 #	endif
