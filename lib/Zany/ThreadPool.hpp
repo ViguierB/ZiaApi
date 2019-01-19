@@ -23,8 +23,8 @@ class ThreadPool {
 public:
 	using Handler = std::function<void()>;
 
-	ThreadPool(std::uint32_t threadNbr);
-	~ThreadPool();
+	inline ThreadPool(std::uint32_t threadNbr);
+	inline ~ThreadPool();
 
 	inline std::uint32_t	available();
 	inline void				runTask(Handler const &hdl);
@@ -34,7 +34,7 @@ public:
 	// /!\ Usage of the ThreadPool instance after will have an unspecified behaviour
 	inline void				abort();
 private:
-	void	_entrypoint();
+	inline void	_entrypoint();
 
 	std::uint32_t				_nbr;
 	std::atomic<std::uint32_t>	_inUse;

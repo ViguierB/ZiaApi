@@ -10,3 +10,5 @@
 #include "Zany/Platform.hpp"
 #include "Zany/Entity.hpp"
 #include "Zany/Loader.hpp"
+#include "Zany/ThreadPool.hpp"
+#include "Zany/Pipeline.hpp"

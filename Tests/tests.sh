@@ -23,11 +23,12 @@ fi
 	cd $BuildDir
 	cmake ..
 	cmake --build . $@
-) && echo "OK" || (echo "KO" && exit 1);
+) && ( echo "OK" ) || ( echo "KO"; exit 1 );
 
-( $Debugger $ExecutablePath ) &&
+( $Debugger $ExecutablePath ) && (
 	echo "OK"
 	exit 0
-||
+) || (
 	echo "KO"
 	exit 1
+)
