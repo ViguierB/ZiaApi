@@ -31,6 +31,8 @@ public:
 		READ_WRITE
 	};
 
+	class Instance;
+
 	class Set {
 	public:
 		struct ID {
@@ -40,11 +42,13 @@ public:
 
 		Set() = default;
 
+		template<Rights R>
+		struct _FunctionTypeSelector {};
+
 		template<Priority P = Priority::LOW, Rights R = Rights::READ_ONLY>
-		inline ID	addTask(ThreadPool::Handler const &fct);
-		inline void	execute();
+		inline ID	addTask(typename _FunctionTypeSelector<R>::type const &fct);
+		inline void	execute(ThreadPool &pool, Instance &pipeline);
 		inline void	removeTask(ID id);
-		inline void	linkTheadPool(ThreadPool &pool) { _pool = &pool; }
 
 		inline auto	&getMutex() { return _mtx; }
 	private:
@@ -59,18 +63,16 @@ public:
 			std::uint16_t,
 			std::unordered_map<
 				std::uint64_t,
-				ThreadPool::Handler
+				std::unique_ptr<void>
 			>>		_handlers;
 		std::mutex	_mtx;
-		ThreadPool	*_pool;
 	};
 
 	class Instance {
 	public:
-
-	private:
 		Instance() {}
-		friend Pipeline;
+	private:
+
 	};
 
 	inline void	linkTheadPool(ThreadPool &pool) { _pool = &pool; }
@@ -78,7 +80,7 @@ public:
 	template<Hooks H>
 	inline Set	&getHookSet();
 
-	static inline Pipeline	&instance();
+	static inline Pipeline	&master();
 private:
 	Pipeline(): _pool(nullptr) {}
 
