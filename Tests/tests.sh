@@ -14,13 +14,18 @@ if [ ! -d $BuildDir ]; then
 	mkdir $BuildDir
 fi
 
+Debugger=""
+if [ $1 = "--valgrind" ]; then
+	Debugger="valgrind --leak-check=full --show-leak-kinds=all";
+	shift;
+fi
 (
 	cd $BuildDir
 	cmake ..
 	cmake --build . $@
 ) && echo "OK" || (echo "KO" && exit 1);
 
-( $ExecutablePath ) &&
+( $Debugger $ExecutablePath ) &&
 	echo "OK"
 	exit 0
 ||
