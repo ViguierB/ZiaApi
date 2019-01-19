@@ -15,7 +15,7 @@ if [ ! -d $BuildDir ]; then
 fi
 
 Debugger=""
-if [ $1 = "--valgrind" ]; then
+if [ "$1" = "--valgrind" ]; then
 	Debugger="valgrind --leak-check=full --show-leak-kinds=all";
 	shift;
 fi
