@@ -23,7 +23,8 @@ set(SRCS
 	main.cpp
 	Loader/tests.cpp
 	Entity/tests.cpp
-	ThreadPool/tests.cpp)
+	ThreadPool/tests.cpp
+	Pipeline/tests.cpp)
 
 link_directories(.)
 add_executable(${NAME} ${SRCS})

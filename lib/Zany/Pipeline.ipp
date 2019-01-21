@@ -26,25 +26,37 @@ Pipeline	&Pipeline::master() {
 	return me;
 }
 
+namespace __hidden {
+template<Pipeline::Priority P, Pipeline::Rights R>
+struct _PRSign {
+	static constexpr std::uint16_t	value = ((std::uint16_t) P << 8) | (std::uint16_t) R;
+};
+}
+
 template<Pipeline::Priority P, Pipeline::Rights R>
 inline Pipeline::Set::ID	Pipeline::Set::addTask(typename _FunctionTypeSelector<R>::type const &fct) {
 	std::lock_guard<decltype(_mtx)>	_guard(_mtx);
 	auto newId = _genId();
 
-	_handlers[PRSign<P, R>::value][newId] = (std::unique_ptr<void>(reinterpret_cast<void*>(new decltype(fct)(fct))));
-	return { PRSign<P, R>::value, newId };
+	auto *hdl = new (typename _FunctionTypeSelector<R>::type)(fct);
+	_handlers[__hidden::_PRSign<P, R>::value].insert(std::make_pair(newId, std::shared_ptr<void>(hdl)));
+	return { __hidden::_PRSign<P, R>::value, newId };
 }
 
 namespace __hidden {
 template<Pipeline::Hooks H>
 struct _SetRegister {
-	static inline Pipeline::Set	value;
+	static inline Pipeline::Set	&value() {
+		static Pipeline::Set	val;
+
+		return val;
+	};
 };
 }
 
 template<Pipeline::Hooks H>
 Pipeline::Set	&Pipeline::getHookSet() {
-	return __hidden::_SetRegister<H>::value;
+	return __hidden::_SetRegister<H>::value();
 }
 
 void	Pipeline::Set::execute(ThreadPool &pool, Pipeline::Instance &pipeline) {

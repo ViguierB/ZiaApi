@@ -45,25 +45,22 @@ public:
 		template<Rights R>
 		struct _FunctionTypeSelector {};
 
-		template<Priority P = Priority::LOW, Rights R = Rights::READ_ONLY>
+		template<Priority P = Priority::LOW, Rights R = Rights::READ_WRITE>
 		inline ID	addTask(typename _FunctionTypeSelector<R>::type const &fct);
 		inline void	execute(ThreadPool &pool, Instance &pipeline);
 		inline void	removeTask(ID id);
 
+		/* maybe useless ... */
 		inline auto	&getMutex() { return _mtx; }
 	private:
 		std::uint64_t	_genId()
 			{ static std::uint64_t nextid = 0; return ++nextid; }
 
-		template<Priority P, Rights R>
-		struct PRSign {
-			static constexpr std::uint16_t	value = ((std::uint16_t) P << 8) | (std::uint16_t) R;
-		};
 		std::map<
 			std::uint16_t,
 			std::unordered_map<
 				std::uint64_t,
-				std::unique_ptr<void>
+				std::shared_ptr<void>
 			>>		_handlers;
 		std::mutex	_mtx;
 	};
@@ -79,6 +76,9 @@ public:
 
 	template<Hooks H>
 	inline Set	&getHookSet();
+	template<Hooks H>
+	inline void	executeHook(Instance &instance)
+		{ getHookSet<H>().execute(*_pool, instance); }
 
 	static inline Pipeline	&master();
 private:
