@@ -1,7 +1,7 @@
 #include <iostream>
 #include "Zany.hpp"
 
-extern "C" int testsLoader() {
+int testsLoader() {
 	zany::Loader	l;
 
 	std::string		libPath;

@@ -3,7 +3,7 @@
 
 int TESTNBR = 0;
 
-extern "C" int testsThreadPool() {
+int testsThreadPool() {
 	zany::ThreadPool	pool(8);
 	std::mutex			mtx;
 

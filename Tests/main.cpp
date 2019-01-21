@@ -1,9 +1,11 @@
-extern "C" void testsEntity();
-extern "C" void testsLoader();
-extern "C" void testsThreadPool();
+void testsEntity();
+void testsLoader();
+void testsThreadPool();
+void testsPipeline();
 
 int main() {
 	testsEntity();
 	testsLoader();
 	testsThreadPool();
+	testsPipeline();
 }
