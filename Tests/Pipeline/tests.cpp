@@ -28,6 +28,10 @@ int	testsPipeline() {
 
 
 	zany::Pipeline::Instance	newInstance;
-	master.executeHook<zany::Pipeline::Hooks::AFTER_ACCEPT>(newInstance);
+	//master.executeHook<zany::Pipeline::Hooks::AFTER_ACCEPT>(newInstance);
+	zany::Pipeline::Hooks::forEach([&newInstance, &pool] (zany::Pipeline::Set &set) {
+		std::cout << "MiddleWare!" << std::endl;
+		set.execute(pool, newInstance);
+	});
 	return 0;
 }

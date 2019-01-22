@@ -44,7 +44,7 @@ inline Pipeline::Set::ID	Pipeline::Set::addTask(typename _FunctionTypeSelector<R
 }
 
 namespace __hidden {
-template<Pipeline::Hooks H>
+template<Pipeline::Hooks::Decl H>
 struct _SetRegister {
 	static inline Pipeline::Set	&value() {
 		static Pipeline::Set	val;
@@ -54,7 +54,20 @@ struct _SetRegister {
 };
 }
 
-template<Pipeline::Hooks H>
+template<Pipeline::Hooks::Decl D>
+template<typename Hdl>
+void	Pipeline::Hooks::HookMetaIterate<D>::callSet(Hdl &&hdl) {
+	hdl(__hidden::_SetRegister<D>::value());
+}
+
+template<Pipeline::Hooks::Decl D, Pipeline::Hooks::Decl ...Ds>
+template<typename Hdl>
+void	Pipeline::Hooks::HookMetaIterate<D, Ds...>::callSet(Hdl &&hdl) {
+	HookMetaIterate<D>::callSet(hdl);
+	HookMetaIterate<Ds...>::callSet(hdl);
+}
+
+template<Pipeline::Hooks::Decl H>
 Pipeline::Set	&Pipeline::getHookSet() {
 	return __hidden::_SetRegister<H>::value();
 }

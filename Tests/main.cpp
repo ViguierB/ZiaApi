@@ -1,7 +1,7 @@
-void testsEntity();
-void testsLoader();
-void testsThreadPool();
-void testsPipeline();
+int testsEntity();
+int testsLoader();
+int testsThreadPool();
+int testsPipeline();
 
 int main() {
 	testsEntity();

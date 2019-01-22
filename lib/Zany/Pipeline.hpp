@@ -14,11 +14,37 @@ namespace zany {
 
 class Pipeline {
 public:
-	enum class Hooks {
-		AFTER_ACCEPT,
-		BEFORE_HTTP_HEADER_INTERPRETATION,
-		AFTER_HTTP_HEADER_INTERPRETATION
-		/* ... */
+
+	class Hooks {
+	public:
+#		define HOOKSFACTORY(...) \
+			enum Decl { \
+				__VA_ARGS__ \
+			}; \
+			template<typename Hdl> \
+			static inline void forEach(Hdl &&handler) { HookMetaIterate<__VA_ARGS__>::callSet(handler); }
+
+		HOOKSFACTORY(
+			AFTER_ACCEPT,
+			BEFORE_HTTP_HEADER_INTERPRETATION,
+			AFTER_HTTP_HEADER_INTERPRETATION
+			/* ... */
+		)
+#		undef HOOKSMAKER
+	private:
+		template<Decl ...Ds>
+		struct HookMetaIterate {};
+
+		template<Decl D>
+		struct HookMetaIterate<D> {
+			template<typename Hdl>
+			static inline void	callSet(Hdl &&);
+		};
+		template<Decl D, Decl ...Ds>
+		struct HookMetaIterate<D, Ds...> {
+			template<typename Hdl>
+			static inline void	callSet(Hdl &&);
+		};
 	};
 
 	enum class Priority: std::uint8_t {
@@ -74,9 +100,9 @@ public:
 
 	inline void	linkTheadPool(ThreadPool &pool) { _pool = &pool; }
 
-	template<Hooks H>
+	template<Hooks::Decl H>
 	inline Set	&getHookSet();
-	template<Hooks H>
+	template<Hooks::Decl H>
 	inline void	executeHook(Instance &instance)
 		{ getHookSet<H>().execute(*_pool, instance); }
 
