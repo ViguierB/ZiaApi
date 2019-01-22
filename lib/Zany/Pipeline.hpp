@@ -15,10 +15,13 @@ namespace zany {
 class Pipeline {
 public:
 	enum class Hooks {
-		AFTER_ACCEPT,
-		BEFORE_HTTP_HEADER_INTERPRETATION,
-		AFTER_HTTP_HEADER_INTERPRETATION
-		/* ... */
+		BEFORE_HANDLE_REQUEST,
+		ON_HANDLE_REQUEST,
+		ON_DATA_AVAILABLE,
+		ON_DATA_END,
+		BEFORE_HANDLE_RESPONSE,
+		ON_HANDLE_RESPONSE,
+		BEFORE_CLOSE_SOCKET
 	};
 
 	enum class Priority: std::uint8_t {
