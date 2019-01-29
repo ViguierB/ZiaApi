@@ -21,12 +21,12 @@ int testsLoader() {
 	zany::ThreadPool	pool(8);
 
 	pipelineMaster.linkThreadPool(pool);
-	std::cout << (void*) &pipelineMaster << std::endl;
 
 	zany::Pipeline::Instance newInstance;
 	zany::Pipeline::Hooks::forEach([&newInstance, &pipelineMaster] (auto hook) {
 		pipelineMaster.getHookSet(hook).execute(newInstance);
 	});
 
+	l.unload(module);
 	return (0);
 }

@@ -21,12 +21,6 @@ struct Pipeline::Set::_FunctionTypeSelector<Pipeline::Rights::READ_WRITE> {
 	using type = std::function<void(Pipeline::Instance &)>;
 };
 
-// Pipeline	&Pipeline::master() {
-// 	static std::unique_ptr<Pipeline>	me{new Pipeline()};
-
-// 	return *me;
-// }
-
 namespace __hidden {
 template<Pipeline::Priority P, Pipeline::Rights R>
 struct _PRSign {
@@ -50,9 +44,9 @@ void	Pipeline::Set::removeTask(ID id) {
 		return;
 	auto &handlerMap = it->second;
 	auto itH = handlerMap.find(id.uniqueId);
-	if (itH == handlerMap.end())
+	if (itH == handlerMap.end()) {
 		return;
-	else {
+	} else {
 		handlerMap.erase(itH);
 		if (handlerMap.empty())
 			_handlers.erase(it);
@@ -64,19 +58,6 @@ template<typename Hdl>
 void	Pipeline::Hooks::HookMetaIterate<D>::callSet(Hdl &&hdl) {
 	hdl(D);
 }
-
-
-// template<auto D>
-// template<typename Hdl, std::enable_if_t<std::is_invocable<typename Hdl, Pipeline::Hooks::Decl, std::ref(Pipeline::Set)>::value, int> = 0>
-// void	Pipeline::Hooks::HookMetaIterate<D>::callSet(Hdl &&hdl) {
-// 	hdl(D, __hidden::_SetRegister<D>::value());
-// }
-
-// template<auto D>
-// template<typename Hdl, std::enable_if_t<std::is_invocable<Hdl, std::ref(Pipeline::Set)>::value, int> = 0>
-// void	Pipeline::Hooks::HookMetaIterate<D>::callSet(Hdl &&hdl) {
-// 	hdl(__hidden::_SetRegister<D>::value());
-// }
 
 template<auto D, auto ...Ds>
 template<typename ...Args>
@@ -100,24 +81,25 @@ Pipeline::Set	&Pipeline::getHookSet(Pipeline::Hooks::Decl hook) {
 }
 
 void	Pipeline::Set::execute(Pipeline::Instance &pipeline) {
-	printf("Execute\n!!");
 	for (auto &group: _handlers) {
-		auto r = static_cast<Rights>(group.first | 0xFF);
+		auto r = static_cast<Rights>(group.first & 0xFF);
 		if (r == Rights::READ_ONLY) {
 			std::condition_variable			isDone;
 			std::mutex						mtx;
-			std::unique_lock<decltype(mtx)>	lock;
+			std::unique_lock<decltype(mtx)>	lock(mtx);
 			std::atomic<std::uint32_t>		runCounter(group.second.size());
 
 			for (auto &hdl: group.second) {
 				_parent.getThreadPool().runTask([&] {
 					reinterpret_cast<typename _FunctionTypeSelector<Rights::READ_ONLY>::type*>(hdl.second.get())->operator()(pipeline);
 					--runCounter;
-					if (runCounter <= 0)
+					if (runCounter.load() <= 0)
 						isDone.notify_all();
 				});
 			}
-			isDone.wait(lock);
+			while (runCounter.load() > 0)
+				isDone.wait(lock);
+			std::this_thread::yield(); //wait for all thread
 		} else {
 			for (auto &hdl: group.second) {
 				reinterpret_cast<typename _FunctionTypeSelector<Rights::READ_WRITE>::type*>(hdl.second.get())->operator()(pipeline);

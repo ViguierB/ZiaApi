@@ -48,6 +48,7 @@
 		"ratio": "cpp",
 		"thread": "cpp",
 		"atomic": "cpp",
-		"deque": "cpp"
+		"deque": "cpp",
+		"numeric": "cpp"
 	}
 }

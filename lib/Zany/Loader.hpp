@@ -29,7 +29,6 @@ public:
 
 	class AbstractModule {
 	private:
-		Pipeline	*_master = nullptr;
 		ID			_unique;
 	public:
 		AbstractModule(): _unique(reinterpret_cast<ID>(this)) {}
@@ -37,7 +36,7 @@ public:
 
 		virtual void	init() = 0;
 		auto			getUniqueId() const { return _unique; }
-		void			linkMasterPipeline(Pipeline &p) { _master = &p; }
+		void			linkMasterPipeline(Pipeline &p) { master = &p; }
 	protected:
 		class Collector {
 		public:
@@ -50,7 +49,7 @@ public:
 			std::size_t	_handlerLen = 0;
 		};
 		Collector	garbage;
-		Pipeline	&master = *_master;
+		Pipeline	*master = nullptr;
 	};
 
 	inline AbstractModule	&load(std::string const &name);
@@ -82,14 +81,6 @@ private:
 
 	std::unordered_map<ID, std::unique_ptr<ModuleWrapper>>	_modules;
 };
-
-Loader::AbstractModule::Collector::~Collector() {
-	for (std::size_t i = 0; i < _handlerLen; ++i) {
-		auto &idSet = _handlerIDs[i];
-
-		idSet.set->removeTask(idSet);
-	}
-}
 
 }
 

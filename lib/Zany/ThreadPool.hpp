@@ -27,6 +27,7 @@ public:
 	inline ~ThreadPool();
 
 	inline std::uint32_t	available();
+	inline auto				pending();
 	inline void				runTask(Handler const &hdl);
 	inline void				waitForEmpty();
 

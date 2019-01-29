@@ -102,11 +102,16 @@ void	ThreadPool::runTask(Handler const &hdl) {
 		_handlers.push(hdl);
 	}
 	if (notify)
-		_readyNotifier.notify_one();
+		_readyNotifier.notify_all();
 }
 
 std::uint32_t	ThreadPool::available() {
 	return _nbr - _inUse.operator unsigned int();
+}
+
+auto			ThreadPool::pending() {
+	std::lock_guard<decltype(_lockPeek)>	_guard(_lockPeek);
+	return _handlers.size();
 }
 
 void	ThreadPool::waitForEmpty() {
