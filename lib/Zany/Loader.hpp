@@ -17,23 +17,40 @@
 #include <string>
 #include <memory>
 #include <tuple>
+#include <array>
+#include "Pipeline.hpp"
 #include "Platform.hpp"
 
 namespace zany {
 
 class Loader {
 public:
-	using ID = std::uint64_t;
+	using ID = std::uintptr_t;
 
 	class AbstractModule {
+	private:
+		Pipeline	*_master = nullptr;
+		ID			_unique;
 	public:
 		AbstractModule(): _unique(reinterpret_cast<ID>(this)) {}
-		virtual ~AbstractModule() = default;
+		virtual inline ~AbstractModule() = default;
 
 		virtual void	init() = 0;
 		auto			getUniqueId() const { return _unique; }
-	private:
-		ID	_unique;
+		void			linkMasterPipeline(Pipeline &p) { _master = &p; }
+	protected:
+		class Collector {
+		public:
+			inline ~Collector();
+			Pipeline::Set::ID	operator<<(Pipeline::Set::ID id)
+				{ _handlerIDs[_handlerLen++] = id; return id; }
+		private:
+			std::array<Pipeline::Set::ID, Pipeline::Hooks::count()>
+						_handlerIDs;
+			std::size_t	_handlerLen = 0;
+		};
+		Collector	garbage;
+		Pipeline	&master = *_master;
 	};
 
 	inline AbstractModule	&load(std::string const &name);
@@ -65,6 +82,14 @@ private:
 
 	std::unordered_map<ID, std::unique_ptr<ModuleWrapper>>	_modules;
 };
+
+Loader::AbstractModule::Collector::~Collector() {
+	for (std::size_t i = 0; i < _handlerLen; ++i) {
+		auto &idSet = _handlerIDs[i];
+
+		idSet.set->removeTask(idSet);
+	}
+}
 
 }
 

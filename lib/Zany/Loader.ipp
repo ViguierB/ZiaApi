@@ -22,6 +22,7 @@ Loader::AbstractModule &Loader::load(std::string const &filename) {
 
 	if (ptr == nullptr) {
 		//TODO: Handle tis error correctly;
+		printf("ERROR = %s\n", dlerror());
 		throw std::exception();
 	}
 

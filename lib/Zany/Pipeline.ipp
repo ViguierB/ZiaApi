@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <memory>
 #include "Pipeline.hpp"
 
 namespace zany {
@@ -20,11 +21,11 @@ struct Pipeline::Set::_FunctionTypeSelector<Pipeline::Rights::READ_WRITE> {
 	using type = std::function<void(Pipeline::Instance &)>;
 };
 
-Pipeline	&Pipeline::master() {
-	static Pipeline	me;
+// Pipeline	&Pipeline::master() {
+// 	static std::unique_ptr<Pipeline>	me{new Pipeline()};
 
-	return me;
-}
+// 	return *me;
+// }
 
 namespace __hidden {
 template<Pipeline::Priority P, Pipeline::Rights R>
@@ -40,39 +41,66 @@ inline Pipeline::Set::ID	Pipeline::Set::addTask(typename _FunctionTypeSelector<R
 
 	auto *hdl = new (typename _FunctionTypeSelector<R>::type)(fct);
 	_handlers[__hidden::_PRSign<P, R>::value].insert(std::make_pair(newId, std::shared_ptr<void>(hdl)));
-	return { __hidden::_PRSign<P, R>::value, newId };
+	return { this, __hidden::_PRSign<P, R>::value, newId };
 }
 
-namespace __hidden {
-template<Pipeline::Hooks::Decl H>
-struct _SetRegister {
-	static inline Pipeline::Set	&value() {
-		static Pipeline::Set	val;
-
-		return val;
-	};
-};
+void	Pipeline::Set::removeTask(ID id) {
+	auto it = _handlers.find(id.PRSignValue);
+	if (it == _handlers.end())
+		return;
+	auto &handlerMap = it->second;
+	auto itH = handlerMap.find(id.uniqueId);
+	if (itH == handlerMap.end())
+		return;
+	else {
+		handlerMap.erase(itH);
+		if (handlerMap.empty())
+			_handlers.erase(it);
+	}
 }
 
-template<Pipeline::Hooks::Decl D>
+template<auto D>
 template<typename Hdl>
 void	Pipeline::Hooks::HookMetaIterate<D>::callSet(Hdl &&hdl) {
-	hdl(__hidden::_SetRegister<D>::value());
+	hdl(D);
 }
 
-template<Pipeline::Hooks::Decl D, Pipeline::Hooks::Decl ...Ds>
-template<typename Hdl>
-void	Pipeline::Hooks::HookMetaIterate<D, Ds...>::callSet(Hdl &&hdl) {
-	HookMetaIterate<D>::callSet(hdl);
-	HookMetaIterate<Ds...>::callSet(hdl);
+
+// template<auto D>
+// template<typename Hdl, std::enable_if_t<std::is_invocable<typename Hdl, Pipeline::Hooks::Decl, std::ref(Pipeline::Set)>::value, int> = 0>
+// void	Pipeline::Hooks::HookMetaIterate<D>::callSet(Hdl &&hdl) {
+// 	hdl(D, __hidden::_SetRegister<D>::value());
+// }
+
+// template<auto D>
+// template<typename Hdl, std::enable_if_t<std::is_invocable<Hdl, std::ref(Pipeline::Set)>::value, int> = 0>
+// void	Pipeline::Hooks::HookMetaIterate<D>::callSet(Hdl &&hdl) {
+// 	hdl(__hidden::_SetRegister<D>::value());
+// }
+
+template<auto D, auto ...Ds>
+template<typename ...Args>
+void	Pipeline::Hooks::HookMetaIterate<D, Ds...>::callSet(Args &&...args) {
+	HookMetaIterate<D>::callSet(args...);
+	HookMetaIterate<Ds...>::callSet(args...);
 }
 
 template<Pipeline::Hooks::Decl H>
 Pipeline::Set	&Pipeline::getHookSet() {
-	return __hidden::_SetRegister<H>::value();
+	return getHookSet(H);
 }
 
-void	Pipeline::Set::execute(ThreadPool &pool, Pipeline::Instance &pipeline) {
+Pipeline::Set	&Pipeline::getHookSet(Pipeline::Hooks::Decl hook) {
+	auto it = _sets.find(hook);
+	if (it == _sets.end()) {
+		throw std::runtime_error("Bad Hook !");
+	} else {
+		return *(it->second);
+	}
+}
+
+void	Pipeline::Set::execute(Pipeline::Instance &pipeline) {
+	printf("Execute\n!!");
 	for (auto &group: _handlers) {
 		auto r = static_cast<Rights>(group.first | 0xFF);
 		if (r == Rights::READ_ONLY) {
@@ -82,7 +110,7 @@ void	Pipeline::Set::execute(ThreadPool &pool, Pipeline::Instance &pipeline) {
 			std::atomic<std::uint32_t>		runCounter(group.second.size());
 
 			for (auto &hdl: group.second) {
-				pool.runTask([&] {
+				_parent.getThreadPool().runTask([&] {
 					reinterpret_cast<typename _FunctionTypeSelector<Rights::READ_ONLY>::type*>(hdl.second.get())->operator()(pipeline);
 					--runCounter;
 					if (runCounter <= 0)
