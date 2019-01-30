@@ -136,6 +136,8 @@ public:
 	class Instance {
 	public:
 		Instance() {}
+
+		//virtual write() = 0;
 	private:
 
 	};

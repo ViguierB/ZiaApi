@@ -12,3 +12,4 @@
 #include "Zany/Loader.hpp"
 #include "Zany/ThreadPool.hpp"
 #include "Zany/Pipeline.hpp"
+#include "Zany/Event.hpp"
