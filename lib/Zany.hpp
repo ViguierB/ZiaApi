@@ -13,3 +13,4 @@
 #include "Zany/ThreadPool.hpp"
 #include "Zany/Pipeline.hpp"
 #include "Zany/Event.hpp"
+#include "Zany/Context.hpp"

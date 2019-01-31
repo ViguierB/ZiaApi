@@ -49,6 +49,8 @@
 		"thread": "cpp",
 		"atomic": "cpp",
 		"deque": "cpp",
-		"numeric": "cpp"
+		"numeric": "cpp",
+		"typeindex": "cpp",
+		"algorithm": "cpp"
 	}
 }
