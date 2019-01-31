@@ -16,22 +16,22 @@ namespace zany
 Entity::Entity(Type type)
 {
 	switch (type) {
-		case OBJ:
+		case Type::OBJ:
 			_data = std::make_shared<Object>();
 			break;
-		case ARR:
+		case Type::ARR:
 			_data = std::make_shared<Array>();
 			break;
-		case NBR:
+		case Type::NBR:
 			_data = std::make_shared<Number>(0);
 			break;
-		case STR:
+		case Type::STR:
 			_data = std::make_shared<String>("");
 			break;
-		case BOL:
+		case Type::BOL:
 			_data = std::make_shared<Bool>(false);
 			break;
-		case NUL:
+		case Type::NUL:
 			_data = std::make_shared<Null>();
 		default:
 			break;
@@ -130,7 +130,7 @@ bool	Entity::operator!=(Entity const &other) const
 
 Entity	&Entity::operator[](std::string const &key)
 {
-	if (_data == nullptr || _data->getType() != OBJ) {
+	if (_data == nullptr || _data->getType() != Type::OBJ) {
 		throw std::runtime_error("Json : Error : "
 			"Cannot use this Entity");
 	}
@@ -139,7 +139,7 @@ Entity	&Entity::operator[](std::string const &key)
 
 Entity	&Entity::operator[](unsigned idx)
 {
-	if (_data == nullptr || _data->getType() != ARR) {
+	if (_data == nullptr || _data->getType() != Type::ARR) {
 		throw std::runtime_error("Json : Error : "
 			"Cannot use this Entity");
 	}
@@ -148,37 +148,37 @@ Entity	&Entity::operator[](unsigned idx)
 
 bool	Entity::isObject(void)
 {
-	return (_data->getType() == OBJ);
+	return (_data->getType() == Type::OBJ);
 }
 
 bool	Entity::isArray(void)
 {
-	return (_data->getType() == ARR);
+	return (_data->getType() == Type::ARR);
 }
 
 bool	Entity::isNumber(void)
 {
-	return (_data->getType() == NBR);
+	return (_data->getType() == Type::NBR);
 }
 
 bool	Entity::isString(void)
 {
-	return (_data->getType() == STR);
+	return (_data->getType() == Type::STR);
 }
 
 bool	Entity::isBool(void)
 {
-	return (_data->getType() == BOL);
+	return (_data->getType() == Type::BOL);
 }
 
 bool	Entity::isNull(void)
 {
-	return (_data->getType() == NUL);
+	return (_data->getType() == Type::NUL);
 }
 
 Entity	&Entity::push(Entity const &obj)
 {
-	if (_data == nullptr || _data->getType() != ARR) {
+	if (_data == nullptr || _data->getType() != Type::ARR) {
 		throw std::runtime_error("Json : Error : "
 			"Cannot use this Entity");
 	}
@@ -192,9 +192,9 @@ void	Entity::merge(Entity const &toAdd, OnConflitFunc const &onConflit)
 {
 	auto	myType = _data->getType();
 
-	if ((myType == ARR || myType == OBJ) &&
+	if ((myType == Type::ARR || myType == Type::OBJ) &&
 			myType == toAdd.constGetData<AbstractData>().getType()) {
-		if (myType == ARR) {
+		if (myType == Type::ARR) {
 			auto &vec = const_cast<Array&>(toAdd.constGetData<Array>()).get();
 		
 			getData<Array>().get().insert(
@@ -280,13 +280,13 @@ Number::Number(double nbr) :
 
 bool		Number::operator==(AbstractData const &other) const
 {
-	return (other.getType() == Entity::NBR &&
+	return (other.getType() == Entity::Type::NBR &&
 		_value == static_cast<const Number&>(other).get());
 }
 
 Entity::Type	Number::getType() const
 {
-	return Entity::NBR;
+	return Entity::Type::NBR;
 }
 
 std::shared_ptr<AbstractData>	Number::clone(Entity::CloneOption attr) const
@@ -329,12 +329,12 @@ Null::Null()
 
 Entity::Type	Null::getType() const
 {
-	return Entity::NUL;
+	return Entity::Type::NUL;
 }
 
 bool		Null::operator==(AbstractData const &other) const
 {
-	return (other.getType() == Entity::NUL);
+	return (other.getType() == Entity::Type::NUL);
 }
 
 std::shared_ptr<AbstractData>	Null::clone(Entity::CloneOption attr) const
@@ -362,12 +362,12 @@ String::String(std::string const &str) :
 
 Entity::Type	String::getType() const
 {
-	return Entity::STR;
+	return Entity::Type::STR;
 }
 
 bool		String::operator==(AbstractData const &other) const
 {
-	return (other.getType() == Entity::STR &&
+	return (other.getType() == Entity::Type::STR &&
 		*this == static_cast<const String&>(other).get());
 }
 
@@ -423,12 +423,12 @@ Bool::Bool(bool val) :
 
 Entity::Type	Bool::getType() const
 {
-	return Entity::BOL;
+	return Entity::Type::BOL;
 }
 
 bool		Bool::operator==(AbstractData const &other) const
 {
-	return (other.getType() == Entity::BOL &&
+	return (other.getType() == Entity::Type::BOL &&
 		_value == static_cast<const Bool&>(other).get());
 }
 
@@ -476,12 +476,12 @@ Object::Object(std::initializer_list<ObjEntry> list):
 
 Entity::Type	Object::getType() const
 {
-	return Entity::OBJ;
+	return Entity::Type::OBJ;
 }
 
 bool		Object::operator==(AbstractData const &other) const
 {
-	return (other.getType() == Entity::OBJ &&
+	return (other.getType() == Entity::Type::OBJ &&
 		*this == const_cast<Object&>(static_cast<const Object&>(other)).get());
 }
 
@@ -522,12 +522,12 @@ Array::Array(std::initializer_list<Entity> list):
 
 Entity::Type	Array::getType() const
 {
-	return Entity::ARR;
+	return Entity::Type::ARR;
 }
 
 bool		Array::operator==(AbstractData const &other) const
 {
-	return (other.getType() == Entity::ARR &&
+	return (other.getType() == Entity::Type::ARR &&
 		*this == const_cast<Array&>(static_cast<const Array&>(other)).get());
 }
 

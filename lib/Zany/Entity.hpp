@@ -39,11 +39,11 @@ using makeArray = std::initializer_list<ArrayEntry>;
 class Entity
 {
 public:
-	enum CloneOption {
+	enum class CloneOption {
 		LAZY,
 		DEEP
 	};
-	enum Type {
+	enum class Type {
 		NBR,
 		STR,
 		ARR,
@@ -51,7 +51,7 @@ public:
 		BOL,
 		NUL
 	};
-	enum StringifyAttr {
+	enum class StringifyAttr {
 		PRETTY,
 		MINIFIED
 	};
@@ -62,7 +62,7 @@ private:
 		_basicOnConfit(std::string const &key, Entity &first, Entity &second);
 public:
 	 Entity(Entity const &) = default;
-	 inline Entity(Type type = NUL);
+	 inline Entity(Type type = Type::NUL);
 	 inline Entity(double nbr);
 	 inline Entity(long nbr);
 	 inline Entity(unsigned long nbr);
@@ -133,12 +133,12 @@ public:
 
 	static inline Entity	newObject()
 	{
-		return Entity(OBJ);
+		return Entity(Type::OBJ);
 	}
 
 	static inline Entity	newArray()
 	{
-		return Entity(ARR);
+		return Entity(Type::ARR);
 	}
 private:
 	inline Entity(std::shared_ptr<AbstractData> &data);
