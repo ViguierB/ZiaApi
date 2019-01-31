@@ -18,6 +18,7 @@
 #include <memory>
 #include <tuple>
 #include <array>
+#include <variant>
 #include "Pipeline.hpp"
 #include "Platform.hpp"
 
@@ -35,8 +36,11 @@ public:
 		virtual inline ~AbstractModule() = default;
 
 		virtual void	init() = 0;
+		virtual bool	isAParser() { return false; };
+		virtual Entity	parse(std::string const &filename) { return false; }
 		auto			getUniqueId() const { return _unique; }
 		void			linkMasterPipeline(Pipeline &p) { master = &p; }
+		static inline bool	isValidParseResult(Entity const &variant);
 	protected:
 		class Collector {
 		public:

@@ -85,12 +85,12 @@ public:
 	
 	inline Entity	clone(CloneOption attr = CloneOption::DEEP) const;
 
-	inline bool	isObject(void);
-	inline bool	isArray(void);
-	inline bool	isNumber(void);
-	inline bool	isString(void);
-	inline bool	isBool(void);
-	inline bool	isNull(void);
+	inline bool	isObject(void) const;
+	inline bool	isArray(void) const;
+	inline bool	isNumber(void) const;
+	inline bool	isString(void) const;
+	inline bool	isBool(void) const;
+	inline bool	isNull(void) const;
 
 	template<typename T>
 	T	to() const;

@@ -22,6 +22,7 @@ Loader::AbstractModule &Loader::load(std::string const &filename) {
 
 	if (ptr == nullptr) {
 		//TODO: Handle tis error correctly;
+		//printf("%s\n", dlerror());
 		throw std::exception();
 	}
 
@@ -69,6 +70,13 @@ Loader::AbstractModule::Collector::~Collector() {
 
 		idSet.set->removeTask(idSet);
 	}
+}
+
+bool	Loader::AbstractModule::isValidParseResult(Entity const &val) {
+	if (val.isBool() && val == false) {
+		return false;
+	}
+	return true;
 }
 
 }

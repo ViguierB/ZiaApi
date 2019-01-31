@@ -146,32 +146,32 @@ Entity	&Entity::operator[](unsigned idx)
 	return getData<Array>().get()[idx];
 }
 
-bool	Entity::isObject(void)
+bool	Entity::isObject(void) const
 {
 	return (_data->getType() == Type::OBJ);
 }
 
-bool	Entity::isArray(void)
+bool	Entity::isArray(void) const
 {
 	return (_data->getType() == Type::ARR);
 }
 
-bool	Entity::isNumber(void)
+bool	Entity::isNumber(void) const
 {
 	return (_data->getType() == Type::NBR);
 }
 
-bool	Entity::isString(void)
+bool	Entity::isString(void) const
 {
 	return (_data->getType() == Type::STR);
 }
 
-bool	Entity::isBool(void)
+bool	Entity::isBool(void) const
 {
 	return (_data->getType() == Type::BOL);
 }
 
-bool	Entity::isNull(void)
+bool	Entity::isNull(void) const
 {
 	return (_data->getType() == Type::NUL);
 }
