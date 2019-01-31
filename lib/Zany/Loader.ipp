@@ -59,6 +59,10 @@ void	Loader::unload(AbstractModule const &module) {
 	_modules.erase(it);
 }
 
+void	Loader::unloadAll() {
+	_modules.clear();
+}
+
 Loader::AbstractModule::Collector::~Collector() {
 	for (std::size_t i = 0; i < _handlerLen; ++i) {
 		auto &idSet = _handlerIDs[i];

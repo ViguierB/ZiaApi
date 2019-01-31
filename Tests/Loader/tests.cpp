@@ -27,6 +27,6 @@ int testsLoader() {
 		pipelineMaster.getHookSet(hook).execute(newInstance);
 	});
 
-	l.unload(module);
+	l.unloadAll();
 	return (0);
 }

@@ -54,6 +54,7 @@ public:
 
 	inline AbstractModule	&load(std::string const &name);
 	inline void				unload(AbstractModule const &module);
+	inline void				unloadAll();
 private:
 	class ModuleWrapper {
 	public:
@@ -77,6 +78,8 @@ private:
 	private:
 		Handler			_h;
 		AbstractModule	*_m;
+
+		friend Loader;
 	};
 
 	std::unordered_map<ID, std::unique_ptr<ModuleWrapper>>	_modules;
