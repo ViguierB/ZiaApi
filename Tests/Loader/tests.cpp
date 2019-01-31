@@ -47,6 +47,12 @@ int testsLoader() {
 	moduleParser.linkMasterPipeline(pipelineMaster);
 	moduleParser.init();
 
+	std::cout << "iterate: Start" << std::endl;
+	for (auto &m: l) {
+		std::cout << "module: " << m.name() << std::endl;
+	}
+	std::cout << "iterate: End" << std::endl;
+
 	zany::ThreadPool	pool(8);
 
 	pipelineMaster.linkThreadPool(pool);

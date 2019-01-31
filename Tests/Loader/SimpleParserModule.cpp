@@ -8,6 +8,8 @@ public:
 	SimpleParserModule() = default;
 	~SimpleParserModule() { printf("SimpleParserModule Deleted!\n"); };
 
+	virtual auto			name() -> const std::string&
+		{ static const std::string name("SimpleParserModule"); return name; }
 	virtual void			init();
 	virtual bool			isAParser() final { return true; }
 	virtual zany::Entity	parse(std::string const &filename) final;

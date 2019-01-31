@@ -28,6 +28,12 @@ public:
 
 class Context : public InterfaceContext {
 public:
+	Context() = default;
+	Context(Context const &other) = delete;
+	Context(Context &&other) = default;
+	Context &operator=(Context const &other) = delete;
+
+
 	virtual inline void	addTask(Handler const &handler) final;
 	virtual inline void	waitUntilEmpty() final;
 	virtual inline void	run() final;

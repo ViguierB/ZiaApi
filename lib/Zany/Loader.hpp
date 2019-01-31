@@ -19,6 +19,7 @@
 #include <tuple>
 #include <array>
 #include <variant>
+#include <iterator>
 #include "Pipeline.hpp"
 #include "Platform.hpp"
 
@@ -35,11 +36,12 @@ public:
 		AbstractModule(): _unique(reinterpret_cast<ID>(this)) {}
 		virtual inline ~AbstractModule() = default;
 
-		virtual void	init() = 0;
-		virtual bool	isAParser() { return false; };
-		virtual Entity	parse(std::string const &filename) { return false; }
-		auto			getUniqueId() const { return _unique; }
-		void			linkMasterPipeline(Pipeline &p) { master = &p; }
+		virtual void		init() = 0;
+		virtual bool		isAParser() { return false; };
+		virtual Entity		parse(std::string const &filename) { return false; }
+		virtual auto		name() -> const std::string& = 0;
+		auto				getUniqueId() const { return _unique; }
+		void				linkMasterPipeline(Pipeline &p) { master = &p; }
 		static inline bool	isValidParseResult(Entity const &variant);
 	protected:
 		class Collector {
@@ -55,6 +57,13 @@ public:
 		Collector	garbage;
 		Pipeline	*master = nullptr;
 	};
+
+	class Iterator;
+
+	Loader() = default;
+	Loader(Loader const &other) = delete;
+	Loader(Loader &&other) = default;
+	Loader &operator=(Loader const &other) = delete;
 
 	inline AbstractModule	&load(std::string const &name);
 	inline void				unload(AbstractModule const &module);
@@ -84,9 +93,39 @@ private:
 		AbstractModule	*_m;
 
 		friend Loader;
+		friend Loader::Iterator;
 	};
 
 	std::unordered_map<ID, std::unique_ptr<ModuleWrapper>>	_modules;
+public:
+	class Iterator: public std::iterator<std::input_iterator_tag, struct epoll_event> {
+	public:
+		using Type = AbstractModule;
+
+		Iterator() = default;
+		Iterator(decltype(Loader::_modules)::iterator &&it): _current(it) {}
+		Iterator(const Iterator& mit): _current(mit._current) {}
+		Iterator& operator++()
+			{ ++_current; return *this; }
+		Iterator operator++(int)
+			{ Iterator tmp(*this); operator++(); return tmp; }
+		bool operator==(const Iterator &rhs) const
+			{ return _current == rhs._current; }
+		bool operator!=(const Iterator &rhs) const
+			{ return _current != rhs._current; }
+		Type &operator*() { return *_current->second->_m; }
+		Type *operator->() { return _current->second->_m; }
+	private:
+		decltype(Loader::_modules)::iterator	_current;
+
+		friend Loader;
+	};
+
+	inline Iterator			begin() { return _modules.begin(); }
+	inline Iterator			end() { return _modules.end(); }
+	inline Iterator::Type	&front() { return *(Iterator(_modules.begin())); }
+	inline std::size_t		size() { return _modules.size(); }
+	inline Iterator			erase(Iterator it) { return _modules.erase(it._current); } 
 };
 
 }
