@@ -3,6 +3,7 @@ int testsLoader();
 int testsThreadPool();
 int testsPipeline();
 int testsEvents();
+int testsContext();
 
 int main() {
 	testsEntity();
@@ -10,4 +11,5 @@ int main() {
 	testsThreadPool();
 	testsPipeline();
 	testsEvents();
+	testsContext();
 }

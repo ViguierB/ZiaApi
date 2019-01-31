@@ -26,6 +26,7 @@ set(SRCS
 	ThreadPool/tests.cpp
 	Pipeline/tests.cpp
 	Event/tests.cpp
+	Context/tests.cpp
 )
 
 link_directories(.)
