@@ -18,9 +18,9 @@
 #include <memory>
 #include <tuple>
 #include <array>
-#include <variant>
 #include <iterator>
 #include "Pipeline.hpp"
+#include "Entity.hpp"
 #include "Platform.hpp"
 
 namespace zany {
@@ -39,7 +39,8 @@ public:
 		virtual void		init() = 0;
 		virtual bool		isAParser() { return false; };
 		virtual Entity		parse(std::string const &filename) { return false; }
-		virtual auto		name() -> const std::string& = 0;
+		virtual auto		name() const -> const std::string& = 0;
+
 		auto				getUniqueId() const { return _unique; }
 		void				linkMasterPipeline(Pipeline &p) { master = &p; }
 		static inline bool	isValidParseResult(Entity const &variant);

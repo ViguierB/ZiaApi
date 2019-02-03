@@ -7,7 +7,7 @@ public:
 	~SimpleModule() { printf("SimpleModule Deleted!\n"); };
 
 	virtual void				init();
-	virtual const std::string&	name() {
+	virtual const std::string&	name() const {
 		static const std::string name("SimpleModule");
 
 		return name;
