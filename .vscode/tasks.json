@@ -1,0 +1,33 @@
+{
+	// See https://go.microsoft.com/fwlink/?LinkId=733558
+	// for the documentation about the tasks.json format
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "build and test",
+			"type": "shell",
+			"command": "(cd Tests; ./tests.sh -- -j 8)",
+			"windows": {
+				"command": "git-bash -s '(cd Tests; ./tests.sh -- -j 8)'"
+			},
+			"group": "test",
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			}
+		},
+		{
+			"label": "build",
+			"type": "shell",
+			"command": "(cd Tests; ./tests.sh --build -- -j 8)",
+			"windows": {
+				"command": "git-bash -s '(cd Tests; ./tests.sh --build -- -j 8)'"
+			},
+			"group": "test",
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			}
+		}
+	]
+}
