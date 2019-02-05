@@ -17,17 +17,17 @@ HdlCollector::~HdlCollector()
 Event::EvtHdlDestr
 HdlCollector::add(Event::EvtHdlDestr const &hdl) {
 	auto it = _unregisterEventsHdls.insert(_unregisterEventsHdls.end(), hdl);
-	return ([this, it] () {
+	return [this, it] () {
 		auto fct = *it;
 		this->_unregisterEventsHdls.erase(it);
 		fct();
-	});
+	};
 }
 
 HdlCollector
 &HdlCollector::operator<<(Event::EvtHdlDestr const &hdl) {
 	_unregisterEventsHdls.push_back(hdl);
-	return (*this);
+	return *this;
 }
 
 void	HdlCollector::flush(void) {

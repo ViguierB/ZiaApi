@@ -16,5 +16,5 @@ int testsThreadPool() {
 	}
 	pool.waitForEmpty();
 	std::cout << "done!" << std::endl;
-	return (0);
+	return 0;
 }
