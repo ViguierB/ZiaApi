@@ -22,8 +22,8 @@ public:
 		}
 	}
 private:
-	int counter = 0;
-	zany::Pipeline::Instance	*test;
+	int 						counter = 0;
+	zany::Pipeline::Instance	*test; //Property Test !
 };
 
 int testsOrchestrator() {

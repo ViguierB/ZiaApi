@@ -34,8 +34,8 @@ public:
 		return get<_T>();
 	}
 
-	template<typename _T> const _T	&get() const { return dynamic_cast<_Data<_T>*>(_bdata.get())->data; }
-	template<typename _T> _T		&get() { return dynamic_cast<_Data<_T>*>(_bdata.get())->data; }
+	template<typename _T> const _T	&get() const { return static_cast<_Data<_T>*>(_bdata.get())->data; }
+	template<typename _T> _T		&get() { return static_cast<_Data<_T>*>(_bdata.get())->data; }
 private:
 	struct _BaseData {
 		virtual ~_BaseData() = default;
