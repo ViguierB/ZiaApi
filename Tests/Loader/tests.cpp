@@ -65,5 +65,5 @@ int testsLoader() {
 	// });
 
 	l.unloadAll();
-	return (0);
+	return 0;
 }

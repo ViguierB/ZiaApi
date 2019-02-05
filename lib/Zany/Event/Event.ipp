@@ -33,7 +33,7 @@ inline std::string	Event::_extractTemplate() {
 		stm << typeIdx.name();
 	}
 	stm << ") -> " << typeid(Ret).name();
-	return (stm.str());
+	return stm.str();
 }
 
 
@@ -45,7 +45,7 @@ const Event::EvtHdlDestr
 
 	blk->hdl = hdl;
 	_addToList(tpl, blk);
-	return (blk->destructor);
+	return blk->destructor;
 }
 
 template <typename Ret, typename ...Args>
@@ -110,7 +110,7 @@ void	Event::dump() const {
 #endif
 
 bool	Event::isEmpty(void) const {
-	return (_hdls.empty());
+	return _hdls.empty();
 }
 
 void	Event::_addToList(std::string const &tpl, Event::EvtHdlBlockDestr *blk) {

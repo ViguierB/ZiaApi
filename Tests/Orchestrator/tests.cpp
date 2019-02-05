@@ -53,5 +53,5 @@ int testsOrchestrator() {
 	m.linkThreadPool(tp);
 
 	ctx.run();
-	return (0);
+	return 0;
 }

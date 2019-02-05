@@ -46,7 +46,7 @@ public:
 		_hdl();
 	}
 	Event	*operator->(void) {
-		return (&_evt);
+		return &_evt;
 	}
 private:
 	Event				&_evt;

@@ -56,7 +56,7 @@ BasicManager<T>::operator[](T const &eventName) {
 template<typename T>
 inline BasicManager<T>	&BasicManager<T>::get(void) {
 		static BasicManager<T>	manager;
-		return (manager);
+		return manager;
 }
 
 }}

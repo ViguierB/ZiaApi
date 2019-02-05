@@ -24,5 +24,5 @@ int testsContext() {
 	});
 	context.run();
 	thread.join();
-	return (0);
+	return 0;
 }

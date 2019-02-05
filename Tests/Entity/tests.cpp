@@ -21,5 +21,5 @@ int testsEntity() {
 	};
 
 	assert(obj["key2"].isObject());
-	return (0);
+	return 0;
 }
