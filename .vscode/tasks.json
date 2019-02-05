@@ -8,7 +8,7 @@
 			"type": "shell",
 			"command": "(cd Tests; ./tests.sh -- -j 8)",
 			"windows": {
-				"command": "git-bash -s '(cd Tests; ./tests.sh -- -j 8)'"
+				"command": "(ノಠ益ಠ)ノ彡┻━┻"
 			},
 			"group": "test",
 			"presentation": {
@@ -21,13 +21,16 @@
 			"type": "shell",
 			"command": "(cd Tests; ./tests.sh --build -- -j 8)",
 			"windows": {
-				"command": "git-bash -s '(cd Tests; ./tests.sh --build -- -j 8)'"
+				"command": "FUCK THIS! (ノಠ益ಠ)ノ彡┻━┻"
 			},
 			"group": "test",
 			"presentation": {
 				"reveal": "always",
 				"panel": "new"
-			}
+			},
+			"problemMatcher": [
+				"$go"
+			]
 		}
 	]
 }
