@@ -28,11 +28,11 @@ int	testsPipeline() {
 		});
 	}
 
-	zany::Pipeline::Instance	newInstance;
-	//master.executeHook<zany::Pipeline::Hooks::AFTER_ACCEPT>(newInstance);
-	zany::Pipeline::Hooks::forEach([&newInstance, &master] (auto hook) {
-		std::cout << "MiddleWare!" << std::endl;
-		master.getHookSet(hook).execute(newInstance);
-	});
+	// zany::Pipeline::Instance	newInstance;
+	// //master.executeHook<zany::Pipeline::Hooks::AFTER_ACCEPT>(newInstance);
+	// zany::Pipeline::Hooks::forEach([&newInstance, &master] (auto hook) {
+	// 	std::cout << "MiddleWare!" << std::endl;
+	// 	master.getHookSet(hook).execute(newInstance);
+	// });
 	return 0;
 }

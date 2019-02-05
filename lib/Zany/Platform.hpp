@@ -13,14 +13,17 @@
 namespace zany {
 static constexpr bool isUnix = true;
 static constexpr bool isWindows = false;
+using Socket = int;
 }
 
 #else
 # define ZANY_ISWINDOWS
+# include <winsock2.h>
 
 namespace zany {
 static constexpr bool isUnix = false;
 static constexpr bool isWindows = true;
+using Socket = SOCKET;
 }
 
 #endif

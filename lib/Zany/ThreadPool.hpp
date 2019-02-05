@@ -16,6 +16,7 @@
 #include <atomic>
 #include <mutex>
 #include <thread>
+#include "./Context.hpp"
 
 namespace zany {
 
@@ -24,6 +25,9 @@ public:
 	using Handler = std::function<void()>;
 
 	inline ThreadPool(std::uint32_t threadNbr);
+	ThreadPool(ThreadPool const &other) = delete;
+	ThreadPool(ThreadPool &&other) = default;
+	ThreadPool &operator=(ThreadPool const &other) = delete;
 	inline ~ThreadPool();
 
 	inline std::uint32_t	available();

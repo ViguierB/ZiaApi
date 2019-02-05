@@ -27,6 +27,7 @@ set(SRCS
 	Pipeline/tests.cpp
 	Event/tests.cpp
 	Context/tests.cpp
+	Orchestrator/tests.cpp
 )
 
 link_directories(.)
@@ -37,3 +38,6 @@ target_link_libraries(${NAME} ${CMAKE_THREAD_LIBS_INIT})
 
 project(SimpleModule)
 add_library(SimpleModule SHARED Loader/SimpleModule.cpp)
+
+project(SimpleParserModule)
+add_library(SimpleParserModule SHARED Loader/SimpleParserModule.cpp)

@@ -4,6 +4,7 @@ int testsThreadPool();
 int testsPipeline();
 int testsEvents();
 int testsContext();
+int testsOrchestrator();
 
 int main() {
 	testsEntity();
@@ -12,4 +13,5 @@ int main() {
 	testsPipeline();
 	testsEvents();
 	testsContext();
+	testsOrchestrator();
 }
