@@ -16,6 +16,7 @@
 #include <atomic>
 #include <mutex>
 #include <thread>
+#include "./Context.hpp"
 
 namespace zany {
 

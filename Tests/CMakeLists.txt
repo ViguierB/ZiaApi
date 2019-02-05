@@ -27,6 +27,7 @@ set(SRCS
 	Pipeline/tests.cpp
 	Event/tests.cpp
 	Context/tests.cpp
+	Orchestrator/tests.cpp
 )
 
 link_directories(.)

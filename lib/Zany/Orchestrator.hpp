@@ -20,7 +20,7 @@ namespace zany {
 
 class Orchestrator {
 public:
-	Orchestrator(InterfaceContext &ctx): _ctx(ctx) {}
+	Orchestrator(InterfaceContext &ctx);
 	Orchestrator(Orchestrator const &other) = delete;
 	Orchestrator(Orchestrator &&other) = default;
 	Orchestrator &operator=(Orchestrator const &other) = delete;
@@ -33,22 +33,27 @@ public:
 		Loader::AbstractModule const &module,
 		std::function<void()> const &callback);
 	inline void startPipeline(zany::Socket sockFd);
-	inline void waitForSafeHandlersComputed();
+	inline void waitForSafeHandlersFinished();
+
+	template<typename T> inline void	addSafeHandler(T &&function);
+
+	virtual	void	routine() = 0;
 
 	inline void	linkThreadPool(ThreadPool &pool) { _pline.linkThreadPool(pool); }
 	inline auto	&getThreadPool() { return _pline.getThreadPool(); }
 	inline auto	&getThreadPool() const { return _pline.getThreadPool(); }
 	inline auto	&getLoader() const { return _loader; }
+protected:
+	InterfaceContext	&_ctx;
+	Pipeline			_pline;
+	Loader				_loader;
 private:
-	template<typename T> void	_addSafeHandler(T &&function);
+	inline void	_routine();
 
 	std::deque<std::function<void()>>	_safeHdls;
 	std::mutex							_safeMtx;
 	std::atomic<bool>					_safeIsComputing = false;
 	std::vector<zany::Socket>			_waitSafeConnections;
-	InterfaceContext					&_ctx;
-	Pipeline							_pline;
-	Loader								_loader;
 };
 
 }

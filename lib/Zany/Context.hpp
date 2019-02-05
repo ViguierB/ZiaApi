@@ -19,6 +19,7 @@ public:
 	using Handler = std::function<void()>;
 
 	InterfaceContext() = default;
+	virtual ~InterfaceContext() = default;
 
 	virtual void	addTask(Handler const &handler) = 0;
 	virtual void	waitUntilEmpty() = 0;

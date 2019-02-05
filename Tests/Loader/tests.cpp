@@ -59,10 +59,10 @@ int testsLoader() {
 
 	testsParser(moduleParser);
 
-	zany::Pipeline::Instance newInstance;
-	zany::Pipeline::Hooks::forEach([&newInstance, &pipelineMaster] (auto hook) {
-		pipelineMaster.getHookSet(hook).execute(newInstance);
-	});
+	// zany::Pipeline::Instance newInstance;
+	// zany::Pipeline::Hooks::forEach([&newInstance, &pipelineMaster] (auto hook) {
+	// 	pipelineMaster.getHookSet(hook).execute(newInstance);
+	// });
 
 	l.unloadAll();
 	return (0);
