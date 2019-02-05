@@ -1,4 +1,5 @@
-#include "iostream"
+#include <iostream>
+#include <cassert>
 #include "Zany/Orchestrator.hpp"
 
 class ImplOrch : public zany::Orchestrator {
@@ -18,7 +19,25 @@ public:
 			std::cout << std::endl;
 			std::cout << test->properties["patate"].get<std::string>() << std::endl;
 			test->properties["patate"].set<int>(32);
+			assert((test->properties["patate"].type() == typeid(int)));
+			try {
+				test->properties["patate"].get<std::string>();
+			} catch (std::exception const &e) {
+				std::cout << e.what() << std::endl;
+			}
 			std::cout << test->properties["patate"].get<int>() << std::endl;
+
+			class Test {
+			public:
+				Test(int nbr): _ptr(new int(nbr)) {}
+				~Test() { delete _ptr; }
+
+				int	&operator*() { return *_ptr; }
+			private:
+				int	*_ptr;
+			};
+			test->properties["test"] = zany::Property::make<Test>(46);
+			std::cout << *(test->properties["test"].get<Test>()) << std::endl;
 		}
 	}
 private:
