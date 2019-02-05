@@ -151,7 +151,7 @@ public:
 
 		inline void setContext(InterfaceContext &ctx) { _ctx = &ctx; }
 
-		std::unordered_map<std::string, PropertyBase>	properties;
+		std::unordered_map<std::string, Property>	properties;
 	private:
 		Instance() = default;
 

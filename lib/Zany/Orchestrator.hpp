@@ -20,7 +20,7 @@ namespace zany {
 
 class Orchestrator {
 public:
-	Orchestrator(InterfaceContext &ctx);
+	inline Orchestrator(InterfaceContext &ctx);
 	Orchestrator(Orchestrator const &other) = delete;
 	Orchestrator(Orchestrator &&other) = default;
 	Orchestrator &operator=(Orchestrator const &other) = delete;
