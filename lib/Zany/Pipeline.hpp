@@ -11,7 +11,8 @@
 #include <unordered_map>
 #include <exception>
 #include <array>
-#include "ThreadPool.hpp"
+#include "./Property.hpp"
+#include "./ThreadPool.hpp"
 
 namespace zany {
 
@@ -149,6 +150,8 @@ public:
 		//virtual write() = 0;
 
 		inline void setContext(InterfaceContext &ctx) { _ctx = &ctx; }
+
+		std::unordered_map<std::string, PropertyBase>	properties;
 	private:
 		Instance() = default;
 

@@ -14,3 +14,4 @@
 #include "Zany/Pipeline.hpp"
 #include "Zany/Event.hpp"
 #include "Zany/Context.hpp"
+#include "Zany/Property.hpp"

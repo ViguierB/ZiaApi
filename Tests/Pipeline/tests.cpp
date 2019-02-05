@@ -1,6 +1,7 @@
 #include <iostream>
 #include <random>
 #include "Zany.hpp"
+#include "Zany/Property.hpp"
 
 int	testsPipeline() {
 	zany::Pipeline		master;
@@ -29,6 +30,9 @@ int	testsPipeline() {
 	}
 
 	// zany::Pipeline::Instance	newInstance;
+
+	// std::make_shared<std::string>("test");
+	// std::shared_ptr<zany::PropertyBase> ptr(new zany::PropertyBase(zany::Property<std::string>::make("patate")));
 	// //master.executeHook<zany::Pipeline::Hooks::AFTER_ACCEPT>(newInstance);
 	// zany::Pipeline::Hooks::forEach([&newInstance, &master] (auto hook) {
 	// 	std::cout << "MiddleWare!" << std::endl;
