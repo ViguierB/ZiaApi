@@ -1,0 +1,4 @@
+/home/seb/zia/api/Tests/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/seb/zia/api/Tests/cmake-build-debug/CMakeFiles/zany-tests-bin.dir
+/home/seb/zia/api/Tests/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/seb/zia/api/Tests/cmake-build-debug/CMakeFiles/SimpleModule.dir

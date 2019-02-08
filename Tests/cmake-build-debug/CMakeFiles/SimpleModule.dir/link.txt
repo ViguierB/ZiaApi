@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC  -ggdb -W -Wall -Wextra -Wno-missing-field-initializers -Wno-unused-parameter -g  -shared -Wl,-soname,libSimpleModule.so -o libSimpleModule.so CMakeFiles/SimpleModule.dir/Loader/SimpleModule.cpp.o  -L/home/seb/zia/api/Tests/. 
