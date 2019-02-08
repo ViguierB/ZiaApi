@@ -15,8 +15,6 @@ namespace zany {
 		inline bool		isNumber();
 		inline double		getNumber();
 
-		inline bool		isDate();
-
 		inline std::string	const &getData();
 
 	private:
