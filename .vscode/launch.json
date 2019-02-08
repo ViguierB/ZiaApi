@@ -8,6 +8,7 @@
 			"name": "(gdb) Debug tests bin",
 			"type": "cppdbg",
 			"request": "launch",
+			"preLaunchTask": "build",
 			"program": "${workspaceFolder}/Tests/build-Linux/zany-tests-bin",
 			"args": [],
 			"stopAtEntry": false,

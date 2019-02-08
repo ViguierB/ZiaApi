@@ -24,7 +24,11 @@ set(SRCS
 	Loader/tests.cpp
 	Entity/tests.cpp
 	ThreadPool/tests.cpp
-	Pipeline/tests.cpp)
+	Pipeline/tests.cpp
+	Event/tests.cpp
+	Context/tests.cpp
+	Orchestrator/tests.cpp
+)
 
 link_directories(.)
 add_executable(${NAME} ${SRCS})
@@ -34,3 +38,6 @@ target_link_libraries(${NAME} ${CMAKE_THREAD_LIBS_INIT})
 
 project(SimpleModule)
 add_library(SimpleModule SHARED Loader/SimpleModule.cpp)
+
+project(SimpleParserModule)
+add_library(SimpleParserModule SHARED Loader/SimpleParserModule.cpp)

@@ -22,7 +22,7 @@ Loader::AbstractModule &Loader::load(std::string const &filename) {
 
 	if (ptr == nullptr) {
 		//TODO: Handle tis error correctly;
-		printf("ERROR = %s\n", dlerror());
+		//printf("%s\n", dlerror());
 		throw std::exception();
 	}
 
@@ -58,6 +58,25 @@ void	Loader::unload(AbstractModule const &module) {
 	}
 
 	_modules.erase(it);
+}
+
+void	Loader::unloadAll() {
+	_modules.clear();
+}
+
+Loader::AbstractModule::Collector::~Collector() {
+	for (std::size_t i = 0; i < _handlerLen; ++i) {
+		auto &idSet = _handlerIDs[i];
+
+		idSet.set->removeTask(idSet);
+	}
+}
+
+bool	Loader::AbstractModule::isValidParseResult(Entity const &val) {
+	if (val.isBool() && val == false) {
+		return false;
+	}
+	return true;
 }
 
 }

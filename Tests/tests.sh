@@ -14,6 +14,12 @@ if [ ! -d $BuildDir ]; then
 	mkdir $BuildDir
 fi
 
+JustBuild="false"
+if [ "$1" = "--build" ]; then
+	JustBuild="true";
+	shift;
+fi
+
 Debugger=""
 if [ "$1" = "--valgrind" ]; then
 	Debugger="valgrind --leak-check=full --show-leak-kinds=all";
@@ -25,6 +31,9 @@ fi
 	cmake --build . $@
 ) && ( echo "OK" ) || ( echo "KO"; exit 1 );
 
+if [ "$JustBuild" = "true" ]; then
+	exit 0
+fi
 ( $Debugger $ExecutablePath ) && (
 	echo "OK"
 	exit 0

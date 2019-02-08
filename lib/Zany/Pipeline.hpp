@@ -11,7 +11,8 @@
 #include <unordered_map>
 #include <exception>
 #include <array>
-#include "ThreadPool.hpp"
+#include "./Property.hpp"
+#include "./ThreadPool.hpp"
 
 namespace zany {
 
@@ -101,6 +102,10 @@ public:
 		};
 
 		Set(Pipeline *parent): _parent(*parent) {}
+		Set(Set const &other) = delete;
+		Set(Set &&other) = default;
+		Set &operator=(Set const &other) = delete;
+
 
 		template<Rights R>
 		struct _FunctionTypeSelector {};
@@ -132,16 +137,36 @@ public:
 			_sets.emplace(std::make_pair(hook, std::make_unique<Set>(this)));
 		});
 	}
+	Pipeline(Pipeline const &other) = delete;
+	Pipeline(Pipeline &&other) = default;
+	Pipeline &operator=(Pipeline const &other) = delete;
+
 
 	class Instance {
 	public:
-		Instance() {}
-	private:
+		Instance(Instance const &other) = delete;
+		Instance(Instance &&other) = default;
+		Instance &operator=(Instance const &other) = delete;
+		//virtual write() = 0;
 
+		inline void setContext(InterfaceContext &ctx) { _ctx = &ctx; }
+
+		std::unordered_map<std::string, Property>	properties;
+	private:
+		Instance() = default;
+
+		InterfaceContext	*_ctx;
+
+		friend Pipeline;
 	};
+	inline auto &createInstance() { return _instances.emplace_back(Instance()); }
 
 	inline void	linkThreadPool(ThreadPool &pool) { _pool = &pool; }
 	inline auto &getThreadPool() { return *_pool; }
+	inline auto &getThreadPool() const { return *_pool; }
+
+	template<typename T = zany::Context, typename ...Args>
+	inline void	startPipeline(zany::Socket fd, Args &&...);
 
 	template<Hooks::Decl H>
 	inline Set	&getHookSet();
@@ -151,6 +176,7 @@ public:
 		{ getHookSet<H>().execute(instance); }
 private:
 	ThreadPool								*_pool;
+	std::list<Instance>						_instances;
 	std::unordered_map<Hooks::Decl, std::unique_ptr<Set>>	_sets;
 };
 
