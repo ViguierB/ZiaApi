@@ -45,12 +45,16 @@ private:
 	zany::Pipeline::Instance	*test; //Property Test !
 };
 
+int testsLoader(zany::Orchestrator &);
+
 int testsOrchestrator() {
 	zany::Context		ctx;
 	ImplOrch			m(ctx);
 	zany::ThreadPool	tp(8);
 
 	m.linkThreadPool(tp);
+
+	testsLoader(m);
 
 	ctx.run();
 	return 0;

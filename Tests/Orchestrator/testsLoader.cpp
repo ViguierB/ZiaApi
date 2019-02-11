@@ -24,9 +24,8 @@ void testsParser(zany::Loader::AbstractModule &module) {
 	}
 }
 
-int testsLoader() {
-	zany::Loader	l;
-	zany::Pipeline	pipelineMaster;
+int testsLoader(zany::Orchestrator &master) {
+	zany::Loader	&l = const_cast<zany::Loader&>(master.getLoader());
 
 	std::string		libPath[2];
 
@@ -41,10 +40,10 @@ int testsLoader() {
 	auto &module = l.load(libPath[0]);
 	auto &moduleParser = l.load(libPath[1]);
 
-	module.linkMasterPipeline(pipelineMaster);
+	module.linkOrchestrator(master);
 	module.init();
 
-	moduleParser.linkMasterPipeline(pipelineMaster);
+	moduleParser.linkOrchestrator(master);
 	moduleParser.init();
 
 	std::cout << "iterate: Start" << std::endl;
@@ -55,7 +54,7 @@ int testsLoader() {
 
 	zany::ThreadPool	pool(8);
 
-	pipelineMaster.linkThreadPool(pool);
+	master.linkThreadPool(pool);
 
 	testsParser(moduleParser);
 

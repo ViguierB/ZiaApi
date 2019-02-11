@@ -13,6 +13,7 @@
 #include <array>
 #include "./Property.hpp"
 #include "./ThreadPool.hpp"
+#include "./HttpRequest.hpp"
 
 namespace zany {
 
@@ -175,6 +176,16 @@ public:
 		** Permet le partage d'info entre differents hooks
 		*/
 		std::unordered_map<std::string, Property>	properties;
+
+		/*
+		** Request header
+		*/
+		HttpResponse	request;
+
+		/*
+		** Response header
+		*/
+		HttpResponse	response;
 	protected:
 		Instance() = default;
 

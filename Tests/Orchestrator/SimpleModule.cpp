@@ -19,7 +19,7 @@ private:
 void	SimpleModule::init() {
 	std::cout << "SimpleModule init()" << std::endl;
 
-	garbage << master->getHookSet<zany::Pipeline::Hooks::ON_DATA_AVAILABLE>().addTask([] (zany::Pipeline::Instance &) {
+	garbage << master->getPipeline().getHookSet<zany::Pipeline::Hooks::ON_DATA_AVAILABLE>().addTask([] (zany::Pipeline::Instance &) {
 		std::cout << "test" << std::endl;
 	});
 }

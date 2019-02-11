@@ -21,13 +21,13 @@ include_directories(.)
 
 set(SRCS
 	main.cpp
-	Loader/tests.cpp
 	Entity/tests.cpp
 	ThreadPool/tests.cpp
 	Pipeline/tests.cpp
 	Event/tests.cpp
 	Context/tests.cpp
 	Orchestrator/tests.cpp
+	Orchestrator/testsLoader.cpp
 )
 
 link_directories(.)
@@ -37,7 +37,7 @@ find_package(Threads)
 target_link_libraries(${NAME} ${CMAKE_THREAD_LIBS_INIT})
 
 project(SimpleModule)
-add_library(SimpleModule SHARED Loader/SimpleModule.cpp)
+add_library(SimpleModule SHARED Orchestrator/SimpleModule.cpp)
 
 project(SimpleParserModule)
-add_library(SimpleParserModule SHARED Loader/SimpleParserModule.cpp)
+add_library(SimpleParserModule SHARED Orchestrator/SimpleParserModule.cpp)

@@ -19,6 +19,12 @@ void	Orchestrator::loadModule(std::string const &filename, std::function<void(Lo
 	addSafeHandler([this, filename, callback, errorCallback] {
 		try {
 			auto &module = _loader.load(filename);
+			if (module.isCoreModule()) {
+				if (_coreModule != nullptr) {
+					throw std::runtime_error("Cannot load a core module when another is already load !");
+				}
+				_coreModule = &module;
+			}
 			_ctx.addTask(std::bind(callback, std::ref(module)));
 		} catch (std::exception &e) {
 			if (errorCallback != nullptr)
@@ -37,7 +43,7 @@ void	Orchestrator::unloadModule(Loader::AbstractModule const &module, std::funct
 
 void	Orchestrator::startPipeline(zany::Socket sockFd) {
 	if (_safeIsComputing == false) {
-		_pline.startPipeline(sockFd);
+		_coreModule->coreBeginPipeline(sockFd);
 	} else {
 		_waitSafeConnections.push_back(sockFd);
 	}

@@ -69,6 +69,8 @@ public:
 	inline auto	&getThreadPool() { return _pline.getThreadPool(); }
 	inline auto	&getThreadPool() const { return _pline.getThreadPool(); }
 	inline auto	&getLoader() const { return _loader; }
+	inline auto &getPipeline() { return _pline; }
+	inline auto const &getPipeline() const { return _pline; }
 protected:
 	InterfaceContext	&_ctx;
 	Pipeline			_pline;
@@ -76,6 +78,7 @@ protected:
 private:
 	inline void	_routine();
 
+	Loader::AbstractModule				*_coreModule = nullptr;
 	std::deque<std::function<void()>>	_safeHdls;
 	std::mutex							_safeMtx;
 	std::atomic<bool>					_safeIsComputing = false;

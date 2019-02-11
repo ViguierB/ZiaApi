@@ -25,6 +25,7 @@
 
 namespace zany {
 
+class Orchestrator;
 
 class Loader {
 public:
@@ -55,6 +56,16 @@ public:
 		virtual Entity		parse(std::string const &filename) { return false; }
 
 		/*
+		** Return if is a master module (like ssl module)
+		*/
+		virtual bool		isCoreModule() { return false; }
+
+		/*
+		** Create a custom pipeline instance
+		*/
+		virtual void		coreBeginPipeline(zany::Socket) {}
+
+		/*
 		** Get the module name
 		*/
 		virtual auto		name() const -> const std::string& = 0;
@@ -63,7 +74,7 @@ public:
 		** Get the unique id of the module
 		*/
 		auto				getUniqueId() const { return _unique; }
-		void				linkMasterPipeline(Pipeline &p) { master = &p; }
+		void				linkOrchestrator(Orchestrator &p) { master = &p; }
 		static inline bool	isValidParseResult(Entity const &variant);
 	protected:
 		class Collector {
@@ -76,8 +87,8 @@ public:
 						_handlerIDs;
 			std::size_t	_handlerLen = 0;
 		};
-		Collector	garbage;
-		Pipeline	*master = nullptr;
+		Collector		garbage;
+		Orchestrator	*master = nullptr;
 	};
 
 	class Iterator;
