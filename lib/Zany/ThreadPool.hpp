@@ -24,15 +24,33 @@ class ThreadPool {
 public:
 	using Handler = std::function<void()>;
 
+	/*
+	** Initialize with N threads
+	*/
 	inline ThreadPool(std::uint32_t threadNbr);
 	ThreadPool(ThreadPool const &other) = delete;
 	ThreadPool(ThreadPool &&other) = default;
 	ThreadPool &operator=(ThreadPool const &other) = delete;
 	inline ~ThreadPool();
 
+	/*
+	** Get number of idle threads
+	*/
 	inline std::uint32_t	available();
+
+	/*
+	** get the number of pending handlers
+	*/
 	inline auto				pending();
+
+	/*
+	** start a task
+	*/
 	inline void				runTask(Handler const &hdl);
+
+	/*
+	** wait until Empty
+	*/
 	inline void				waitForEmpty();
 
 	// abort is a dangerous function that should only be used in the most extreme cases

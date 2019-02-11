@@ -21,12 +21,30 @@ public:
 	InterfaceContext() = default;
 	virtual ~InterfaceContext() = default;
 
+	/*
+	** Ajoute une tache
+	*/
 	virtual void	addTask(Handler const &handler) = 0;
+
+	/*
+	** attend tant que la queue d'execution n'est pas vide
+	*/
 	virtual void	waitUntilEmpty() = 0;
+
+	/*
+	** Demarre (blockant)
+	*/
 	virtual void	run() = 0;
+
+	/*
+	** Stop le context
+	*/
 	virtual void	stop() = 0;
 };
 
+/*
+** Une implementation de context
+*/
 class Context : public InterfaceContext {
 public:
 	Context() = default;

@@ -31,25 +31,43 @@ public:
 
 	~Property() = default;
 
+	/*
+	** Cree un Property, call le constructeur de T avec les arguments passés
+	*/
 	template<typename _T, typename ..._Args>
 	static inline Property make(_Args &&...__args) {
 		return Property(new _Data<_T>(std::forward<_Args>(__args)...));
 	}
 
+	/*
+	** Set une nouvelle donnée;
+	*/
 	template<typename _T, typename ..._Args>
 	inline _T &set(_Args &&...__args) {
 		_bdata = decltype(_bdata)(new _Data<_T>(std::forward<_Args>(__args)...));
 		return get<_T>();
 	}
 
+	/*
+	** Get le typeid de la donnée
+	*/
 	inline const auto	&type() const { return _bdata->typeID; }
 
+	/*
+	** Get la valeur en fonction de T
+	**  throw si typeid(T) de correspond pas a la donnée;
+	*/
 	template<typename _T> const _T	&get() const {
 		if (type() != typeid(_T)) {
 			throw Exception();
 		}
 		return static_cast<_Data<_T>*>(_bdata.get())->data;
 	}
+
+	/*
+	** Get la valeur en fonction de T
+	**  throw si typeid(T) de correspond pas a la donnée;
+	*/
 	template<typename _T> _T		&get() {
 		if (type() != typeid(_T)) {
 			throw Exception();

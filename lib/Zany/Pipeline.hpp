@@ -93,6 +93,11 @@ public:
 
 	class Instance;
 
+	/*
+	** Un Set est un ensemble d'handlers pour un hook
+	** il tri les handlers en fonction de leur priorité.
+	** Ce n'est pas a vous de les creer, Pipeline::getHookSet() le permet.
+	*/ 
 	class Set {
 	public:
 		struct ID {
@@ -110,9 +115,20 @@ public:
 		template<Rights R>
 		struct _FunctionTypeSelector {};
 
+		/*
+		** Ajoute un event handler au Set
+		*/
 		template<Priority P = Priority::LOW, Rights R = Rights::READ_WRITE>
 		inline ID	addTask(typename _FunctionTypeSelector<R>::type const &fct);
+
+		/*
+		** Execute les handlers dans le bon ordre
+		*/
 		inline void	execute(Instance &pipeline);
+
+		/*
+		** retire un handler
+		*/
 		inline void	removeTask(ID id);
 
 		/* maybe useless ... */
@@ -147,12 +163,19 @@ public:
 		Instance(Instance const &other) = delete;
 		Instance(Instance &&other) = default;
 		Instance &operator=(Instance const &other) = delete;
-		//virtual write() = 0;
+		
+		// /* doit etre override par le module createur d'instance */
+		// virtual void	write(const char *buffer, std::size_t len) = 0;
+		// /* doit etre override par le module createur d'instance */
+		// virtual ssize_t	read(char *buffer, std::size_t len) = 0;
 
 		inline void setContext(InterfaceContext &ctx) { _ctx = &ctx; }
 
+		/*
+		** Permet le partage d'info entre differents hooks
+		*/
 		std::unordered_map<std::string, Property>	properties;
-	private:
+	protected:
 		Instance() = default;
 
 		InterfaceContext	*_ctx;
@@ -162,21 +185,31 @@ public:
 	inline auto &createInstance() { return _instances.emplace_back(Instance()); }
 
 	inline void	linkThreadPool(ThreadPool &pool) { _pool = &pool; }
-	inline auto &getThreadPool() { return *_pool; }
-	inline auto &getThreadPool() const { return *_pool; }
+	inline auto getThreadPool() -> auto & { return *_pool; }
+	inline auto getThreadPool() const -> const auto & { return *_pool; }
 
+	/*
+	** Creer une instance de Pipeline
+	*/
 	template<typename T = zany::Context, typename ...Args>
 	inline void	startPipeline(zany::Socket fd, Args &&...);
 
+	/*
+	** Recup un set en fonction d'un hook
+	*/
 	template<Hooks::Decl H>
 	inline Set	&getHookSet();
 	inline Set	&getHookSet(Hooks::Decl hook);
+
+	/*
+	** Execute un hook Set
+	*/
 	template<Hooks::Decl H>
 	inline void	executeHook(Instance &instance)
 		{ getHookSet<H>().execute(instance); }
 private:
-	ThreadPool								*_pool;
-	std::list<Instance>						_instances;
+	ThreadPool												*_pool;
+	std::list<Instance>										_instances;
 	std::unordered_map<Hooks::Decl, std::unique_ptr<Set>>	_sets;
 };
 

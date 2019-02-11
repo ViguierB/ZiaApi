@@ -25,6 +25,7 @@
 
 namespace zany {
 
+
 class Loader {
 public:
 	using ID = std::uintptr_t;
@@ -36,11 +37,31 @@ public:
 		AbstractModule(): _unique(reinterpret_cast<ID>(this)) {}
 		virtual inline ~AbstractModule() = default;
 
+		/*
+		** Called after load
+		*/
 		virtual void		init() = 0;
+
+		/*
+		** Return true if your Module is a config parser
+		*/
 		virtual bool		isAParser() { return false; };
+
+		/*
+		** Parse the file,
+		**	return false if it fail
+		**	return a zany::Entity on success
+		*/
 		virtual Entity		parse(std::string const &filename) { return false; }
+
+		/*
+		** Get the module name
+		*/
 		virtual auto		name() const -> const std::string& = 0;
 
+		/*
+		** Get the unique id of the module
+		*/
 		auto				getUniqueId() const { return _unique; }
 		void				linkMasterPipeline(Pipeline &p) { master = &p; }
 		static inline bool	isValidParseResult(Entity const &variant);
@@ -66,7 +87,16 @@ public:
 	Loader(Loader &&other) = default;
 	Loader &operator=(Loader const &other) = delete;
 
+	/*
+	** /!\ dont use this, use Orchestrator::loadModule instead !!
+	** Load a module immediately
+	*/
 	inline AbstractModule	&load(std::string const &name);
+
+	/*
+	** /!\ dont use this, use Orchestrator::unloadModule instead !!
+	** Unload a module immediately
+	*/
 	inline void				unload(AbstractModule const &module);
 	inline void				unloadAll();
 private:
@@ -122,10 +152,30 @@ public:
 		friend Loader;
 	};
 
+	/*
+	**	Get the first module (Iterator)
+	*/
 	inline Iterator			begin() { return _modules.begin(); }
+
+	/*
+	**	Get the last module  (Iterator)
+	*/
 	inline Iterator			end() { return _modules.end(); }
+
+	/*
+	**	Get the first module
+	*/
 	inline Iterator::Type	&front() { return *(Iterator(_modules.begin())); }
+
+	/*
+	**	Get the number of loaded modules
+	*/
 	inline std::size_t		size() { return _modules.size(); }
+
+	/*
+	** /!\ dont use this, use Orchestrator::unloadModule instead !!
+	** Unload a module immediately
+	*/
 	inline Iterator			erase(Iterator it) { return _modules.erase(it._current); } 
 };
 
