@@ -35,8 +35,11 @@ void	Orchestrator::loadModule(std::string const &filename, std::function<void(Lo
 
 void	Orchestrator::unloadModule(Loader::AbstractModule const &module, std::function<void()> const &callback) {
 	addSafeHandler([this, &module, callback] {
+		if (_coreModule == &module) {
+			_coreModule = nullptr;
+		}
+		
 		_loader.unload(module);
-
 		_ctx.addTask(callback);
 	});
 }
