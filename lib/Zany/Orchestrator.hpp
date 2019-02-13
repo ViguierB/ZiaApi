@@ -38,7 +38,8 @@ public:
 	*/
 	inline void unloadModule(
 		Loader::AbstractModule const &module,
-		std::function<void()> const &callback);
+		std::function<void()> const &callback,
+		std::function<void(std::exception)> const &error = nullptr);
 
 	/*
 	** Start une pipeline d'execution apres la reception d'une connexion

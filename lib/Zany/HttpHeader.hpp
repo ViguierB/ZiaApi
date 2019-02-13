@@ -18,6 +18,8 @@ public:
 
 	inline std::string	const &getData();
 
+	inline std::string	&operator*() { return data; }
+	inline std::string	*operator->() { return &data; }
 private:
 	std::string	data;
 };

@@ -21,7 +21,7 @@ void	Orchestrator::loadModule(std::string const &filename, std::function<void(Lo
 			auto &module = _loader.load(filename);
 			if (module.isCoreModule()) {
 				if (_coreModule != nullptr) {
-					throw std::runtime_error("Cannot load a core module when another is already load !");
+					throw std::runtime_error("Cannot load a core module when another is already loaded !");
 				}
 				_coreModule = &module;
 			}
@@ -31,17 +31,24 @@ void	Orchestrator::loadModule(std::string const &filename, std::function<void(Lo
 				_ctx.addTask(std::bind(errorCallback, e));
 		}
 	});
+	waitForSafeHandlersFinished();
 }
 
-void	Orchestrator::unloadModule(Loader::AbstractModule const &module, std::function<void()> const &callback) {
-	addSafeHandler([this, &module, callback] {
-		if (_coreModule == &module) {
-			_coreModule = nullptr;
+void	Orchestrator::unloadModule(Loader::AbstractModule const &module, std::function<void()> const &callback, std::function<void(std::exception)> const &errorCallback) {
+	addSafeHandler([this, &module, callback, errorCallback] {
+		try {
+			if (_coreModule == &module) {
+				_coreModule = nullptr;
+			}
+			
+			_loader.unload(module);
+			_ctx.addTask(callback);
+		} catch (std::exception &e) {
+			if (errorCallback != nullptr)
+				_ctx.addTask(std::bind(errorCallback, e));
 		}
-		
-		_loader.unload(module);
-		_ctx.addTask(callback);
 	});
+	waitForSafeHandlersFinished();
 }
 
 void	Orchestrator::startPipeline(zany::Socket sockFd) {
