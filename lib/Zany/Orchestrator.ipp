@@ -53,6 +53,9 @@ void	Orchestrator::unloadModule(Loader::AbstractModule const &module, std::funct
 
 void	Orchestrator::startPipeline(zany::Socket sockFd) {
 	if (_safeIsComputing == false) {
+		if (_coreModule == nullptr) {
+			throw std::runtime_error("Core module never set !!");
+		}
 		_coreModule->coreBeginPipeline(sockFd);
 	} else {
 		_waitSafeConnections.push_back(sockFd);
