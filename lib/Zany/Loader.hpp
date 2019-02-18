@@ -29,6 +29,11 @@ class Orchestrator;
 
 class Loader {
 public:
+	class Exception: public std::runtime_error {
+	public:
+		template<typename T> Exception(T &&message): std::runtime_error(std::forward<T>(message)) {}
+	};
+
 	using ID = std::uintptr_t;
 
 	class AbstractModule {

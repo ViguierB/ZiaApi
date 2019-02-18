@@ -59,7 +59,8 @@ public:
 	 */
 	inline void unloadModule(
 		Loader::AbstractModule const &module,
-		std::function<void()> const &callback);
+		std::function<void()> const &callback,
+		std::function<void(std::exception)> const &error = nullptr);
 
 	/** \fn startPipeline(zany::Socket sockFd)
 	 * 

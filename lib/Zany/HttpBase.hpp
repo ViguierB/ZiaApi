@@ -10,18 +10,30 @@
 
 namespace zany {
 
-struct HttpBase {
-	std::string									protocole;
-	std::string									protocoleVersion;
-	
+struct HttpBaseRequest {
+	std::string									protocol;
+	std::string									protocolVersion;
 	std::unordered_map<std::string, HttpHeader>	headers;
 };
 
-struct HttpRequest: public HttpBase {
+struct HttpRequest: public HttpBaseRequest {
+	enum class RequestMethods: std::uint8_t {
+		GET = 42,
+		HEAD,
+		POST,
+		PUT,
+		_DELETE_, // DELETE is a keyword for MSVC... 
+		TRACE,
+		OPTIONS,
+		CONNECT,
+		PATCH,
+	};
+
+	RequestMethods	method;
 };
 
-struct HttpResponse: public HttpBase {
+struct HttpResponse: public HttpBaseRequest {
 	unsigned int 	status;
 };
-	
+
 }

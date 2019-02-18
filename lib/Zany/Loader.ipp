@@ -21,9 +21,13 @@ Loader::AbstractModule &Loader::load(std::string const &filename) {
 #	endif
 
 	if (ptr == nullptr) {
-		//TODO: Handle tis error correctly;
-		//printf("%s\n", dlerror());
-		throw std::exception();
+		throw Exception(("Cannot load: " + filename + ": ") +
+#	if defined(ZANY_ISUNIX)
+			dlerror()
+#	else
+			::zany::GetLastErrorAsString()
+#	endif
+		);
 	}
 
 	entrypoint = reinterpret_cast<decltype(entrypoint)>(
@@ -35,8 +39,13 @@ Loader::AbstractModule &Loader::load(std::string const &filename) {
 			(ptr, "entrypoint")
 	);
 	if (entrypoint == nullptr) {
-		//TODO: Handle tis error correctly;
-		throw std::exception();
+		throw Exception("Cannot load: " + filename + ": " +
+#	if defined(ZANY_ISUNIX)
+			dlerror()
+#	else
+			::zany::GetLastErrorAsString()
+#	endif
+		);
 	}
 
 	auto *module = entrypoint();
@@ -53,8 +62,7 @@ void	Loader::unload(AbstractModule const &module) {
 
 	auto it = _modules.find(id);
 	if (it == _modules.end()) {
-		//TODO: handle this error correctly
-		throw std::exception();
+		throw Exception("This module was never loaded");
 	}
 
 	_modules.erase(it);
