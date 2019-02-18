@@ -5,6 +5,12 @@
 ** Orchestrator.hpp
 */
 
+/**
+ * \file Orchestrator.hpp
+ * \brief Core of the API, master controller
+ * \author Benjamin Viguier
+ */
+
 #pragma once
 
 #include <functional>
@@ -16,8 +22,16 @@
 #include "./Loader.hpp"
 #include "./Context.hpp"
 
+/** \namespace zany
+ * 
+ * Namespace of the project
+ */
 namespace zany {
 
+/** \class Orchestrator
+ * 
+ * Orchestrator class for controlling the project
+ */
 class Orchestrator {
 public:
 	inline Orchestrator(InterfaceContext &ctx);
@@ -25,29 +39,38 @@ public:
 	Orchestrator(Orchestrator &&other) = default;
 	Orchestrator &operator=(Orchestrator const &other) = delete;
 
-	/*
-	** Change un module de façon asynchrone
-	*/
+	/** \fn loadModule(std::string const &filename, std::function<void(Loader::AbstractModule &)> const &callback, std::function<void(std::exception)> const &error = nullptr)
+	 * 
+	 * Loading a module asynchronously
+	 * \param filename Path of the file module (*.so)
+	 * \param callback Function to call at the end of the load
+	 * \param error Function to call on load error
+	 */
 	inline void	loadModule(
 		std::string const &filename,
 		std::function<void(Loader::AbstractModule &)> const &callback,
 		std::function<void(std::exception)> const &error = nullptr);
-	
-	/*
-	** Déchange un module de façon asynchrone
-	*/
+
+	/** \fn unloadModule(Loader::AbstractModule const &module, std::function<void()> const &callback)
+	 * 
+	 * Unloading a module asynchronously
+	 * \param module Module to unload (to get from Loader (Ochestrator::getLoader()))
+	 * \param callback Function to call at the end of the unload
+	 */
 	inline void unloadModule(
 		Loader::AbstractModule const &module,
 		std::function<void()> const &callback);
 
-	/*
-	** Start une pipeline d'execution apres la reception d'une connexion
-	*/
+	/** \fn startPipeline(zany::Socket sockFd)
+	 * 
+	 * Start an instance of a Pipeline after the accept of a connexion
+	 */
 	inline void startPipeline(zany::Socket sockFd);
 
-	/*
-	** Permet de lancer l'execution des safe handler
-	*/
+	/** \fn waitForSafeHandlersFinished()
+	 * 
+	 * Launch safe handlers execution
+	 */
 	inline void waitForSafeHandlersFinished();
 
 	/*
@@ -55,6 +78,11 @@ public:
 	**  fonction qui doit etre executé dans un context sécurisé
 	**  par exemple le chargement d'un module
 	*/
+
+	/** \fn addSafeHandler(T &&function)
+	 * 
+	 * 
+	 */
 	template<typename T> inline void	addSafeHandler(T &&function);
 
 	/*

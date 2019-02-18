@@ -5,6 +5,12 @@
 ** Pipeline.hpp
 */
 
+/**
+ * \file Pipeline.hpp
+ * \brief Execution queue of the tasks
+ * \author Benjamin Viguier
+ */
+
 #pragma once
 
 #include <type_traits>
@@ -13,13 +19,26 @@
 #include <array>
 #include "./Property.hpp"
 #include "./ThreadPool.hpp"
-#include "./HttpRequest.hpp"
+#include "./HttpBase.hpp"
 
+/** \namespace zany
+ * 
+ * Namespace of the project
+ */
 namespace zany {
 
+/** \class Pipeline
+ * 
+ * Class handling the hooks to plug the modules functions to the Orchestrator
+ * Try to see it as a manager of sets of handlers, the execution is managed in the Instance Class
+ */
 class Pipeline {
 public:
 
+	/** \class Hooks
+	 * 
+	 * Hooks enum
+	 */
 	class Hooks {
 	private:
 		template<auto ...Ds>
@@ -71,22 +90,30 @@ public:
 				{ return HookMetaIterate<__BEGIN__, __VA_ARGS__, __END__>::next(hook); }
 		
 		HOOKSFACTORY(
-			BEFORE_HANDLE_REQUEST,
-			ON_HANDLE_REQUEST,
-			ON_DATA_AVAILABLE,
-			ON_DATA_END,
-			BEFORE_HANDLE_RESPONSE,
-			ON_HANDLE_RESPONSE,
-			BEFORE_CLOSE_SOCKET
+			BEFORE_HANDLE_REQUEST,	/**< Hooks intervening before every request */
+			ON_HANDLE_REQUEST,	/**< Hooks intervening just after a request (e.g. TLS decryption) */
+			ON_DATA_AVAILABLE,	/**< Hooks intervening when you handle the data request (e.g. HTTP, JSON parsing...) */
+			ON_DATA_END,		/**< Hooks intervening to interpret the request */
+			BEFORE_HANDLE_RESPONSE,	/**< Hooks intervening when you create the data you need for the response */
+			ON_HANDLE_RESPONSE,	/**< Hooks intervening when you format the data of the response (e.g. HTTP formating) */
+			BEFORE_CLOSE_SOCKET	/**< Hooks intervening to encode the response (e.g. TLS encoding) */
 		)
 #		undef HOOKSMAKER
 	};
 
+	/** \enum Priority
+	 * 
+	 * Priority of the hook
+	 */
 	enum class Priority: std::uint8_t {
 		HIGH,
 		MEDIUM,
 		LOW,
 	};
+	/** \enum Rights
+	 * 
+	 * Permissions of the hook (READ_ONLY allow threading in the Pipeline())
+	 */
 	enum class Rights: std::uint8_t {
 		READ_ONLY,
 		READ_WRITE
@@ -94,11 +121,12 @@ public:
 
 	class Instance;
 
-	/*
-	** Un Set est un ensemble d'handlers pour un hook
-	** il tri les handlers en fonction de leur priorité.
-	** Ce n'est pas a vous de les creer, Pipeline::getHookSet() le permet.
-	*/ 
+	/** \class Set
+	 * 
+	 * A set is a group of handlers for a specific hook
+	 * It sorts the handlers from their Priority()
+	 * You don't need to create them, Pipeline::getHookSet() allows it
+	 */
 	class Set {
 	public:
 		struct ID {
@@ -116,23 +144,27 @@ public:
 		template<Rights R>
 		struct _FunctionTypeSelector {};
 
-		/*
-		** Ajoute un event handler au Set
-		*/
+		/** \fn addTask(typename _FunctionTypeSelector<R>::type const &fct)
+		 * 
+		 * Add an handler to the set
+		 */
 		template<Priority P = Priority::LOW, Rights R = Rights::READ_WRITE>
 		inline ID	addTask(typename _FunctionTypeSelector<R>::type const &fct);
 
-		/*
-		** Execute les handlers dans le bon ordre
+		/** \fn execute(Instance &pipeline)
+		 * 
+		 * Execute the handlers in the right order
+		 * \param pipeline The instance of the execution
 		*/
 		inline void	execute(Instance &pipeline);
 
-		/*
-		** retire un handler
+		/** \fn removeTask(ID id)
+		 * 
+		 * Remove an handler
+		 * \param id ID of the handler returned by addTask(typename _FunctionTypeSelector<R>::type const &fct)
 		*/
 		inline void	removeTask(ID id);
 
-		/* maybe useless ... */
 		inline auto	&getMutex() { return _mtx; }
 		inline auto	&getParent() { return _parent; }
 	private:
@@ -158,31 +190,29 @@ public:
 	Pipeline(Pipeline &&other) = default;
 	Pipeline &operator=(Pipeline const &other) = delete;
 
-
+	/** \class Instance
+	 * 
+	 * Class instancing a Pipeline, launching the sets in the right order, etc...
+	 */
 	class Instance {
 	public:
 		Instance(Instance const &other) = delete;
 		Instance(Instance &&other) = default;
 		Instance &operator=(Instance const &other) = delete;
-		
-		// /* doit etre override par le module createur d'instance */
-		// virtual void	write(const char *buffer, std::size_t len) = 0;
-		// /* doit etre override par le module createur d'instance */
-		// virtual ssize_t	read(char *buffer, std::size_t len) = 0;
 
 		inline void setContext(InterfaceContext &ctx) { _ctx = &ctx; }
 
-		/*
-		** Permet le partage d'info entre differents hooks
-		*/
+		/**
+		 * Allow data sharing between different hooks
+		 */
 		std::unordered_map<std::string, Property>	properties;
 
-		/*
+		/**
 		** Request header
 		*/
-		HttpResponse	request;
+		HttpRequest	request;
 
-		/*
+		/**
 		** Response header
 		*/
 		HttpResponse	response;
@@ -199,21 +229,24 @@ public:
 	inline auto getThreadPool() -> auto & { return *_pool; }
 	inline auto getThreadPool() const -> const auto & { return *_pool; }
 
-	/*
-	** Creer une instance de Pipeline
-	*/
+	/** \fn startPipeline(zany::Socket fd, Args &&...)
+	 * 
+	 * Create an instance of a Pipeline
+	 */
 	template<typename T = zany::Context, typename ...Args>
 	inline void	startPipeline(zany::Socket fd, Args &&...);
 
-	/*
-	** Recup un set en fonction d'un hook
-	*/
+	/** \fn getHookSet()
+	 * 
+	 * Get the set of an hook
+	 */
 	template<Hooks::Decl H>
 	inline Set	&getHookSet();
 	inline Set	&getHookSet(Hooks::Decl hook);
 
-	/*
-	** Execute un hook Set
+	/** \fn executeHook(Instance &instance)
+	 * 
+	 * Execute a hook set
 	*/
 	template<Hooks::Decl H>
 	inline void	executeHook(Instance &instance)
