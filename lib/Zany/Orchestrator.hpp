@@ -17,10 +17,12 @@
 #include <deque>
 #include <mutex>
 #include <atomic>
+#include <iostream>
 #include "./Platform.hpp"
 #include "./Pipeline.hpp"
 #include "./Loader.hpp"
 #include "./Context.hpp"
+#include "./Connection.hpp"
 
 /** \namespace zany
  * 
@@ -49,7 +51,7 @@ public:
 	inline void	loadModule(
 		std::string const &filename,
 		std::function<void(Loader::AbstractModule &)> const &callback,
-		std::function<void(std::exception)> const &error = nullptr);
+		std::function<void(zany::Loader::Exception)> const &error = nullptr);
 
 	/** \fn unloadModule(Loader::AbstractModule const &module, std::function<void()> const &callback)
 	 * 
@@ -60,13 +62,13 @@ public:
 	inline void unloadModule(
 		Loader::AbstractModule const &module,
 		std::function<void()> const &callback,
-		std::function<void(std::exception)> const &error = nullptr);
+		std::function<void(zany::Loader::Exception)> const &error = nullptr);
 
 	/** \fn startPipeline(zany::Socket sockFd)
 	 * 
 	 * Start an instance of a Pipeline after the accept of a connexion
 	 */
-	inline void startPipeline(zany::Socket sockFd);
+	inline void startPipeline(zany::Connection::SharedInstance co);
 
 	/** \fn waitForSafeHandlersFinished()
 	 * 
@@ -86,10 +88,27 @@ public:
 	 */
 	template<typename T> inline void	addSafeHandler(T &&function);
 
+	/** \fn zany::Entity	getConfig()
+	 * 
+	 *  get the main config
+	 */
+	virtual const zany::Entity	getConfig() const = 0;
+
+	/** \fn void reload()
+	 * 
+	 * Reload the server
+	 */
+	virtual void	reload() { std::cerr << "Reload: Not implemented!\n"; }
+
 	/*
 	** Fonction de routine, elle est executé a chaque tour de boucle (doit etre override)
 	*/
 	virtual	void	routine() = 0;
+
+	/*
+	** Exectué quand une pipeline est prete, permet le debut de l'execution des hooks par le serveur (doit etre override et threadsafe)
+	*/
+	virtual void	onPipelineReady(zany::Pipeline::Instance &) = 0;
 
 	/*
 	** Lie une threadpool au gestionnaire de pipeline
@@ -107,11 +126,11 @@ protected:
 private:
 	inline void	_routine();
 
-	Loader::AbstractModule				*_coreModule = nullptr;
-	std::deque<std::function<void()>>	_safeHdls;
-	std::mutex							_safeMtx;
-	std::atomic<bool>					_safeIsComputing = false;
-	std::vector<zany::Socket>			_waitSafeConnections;
+	Loader::AbstractModule								*_coreModule = nullptr;
+	std::deque<std::function<void()>>					_safeHdls;
+	std::mutex											_safeMtx;
+	std::atomic<bool>									_safeIsComputing = false;
+	std::vector<std::shared_ptr<Pipeline::Instance>>	_waitSafeConnections;
 };
 
 }

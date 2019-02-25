@@ -8,11 +8,16 @@
 #pragma once
 
 #include <memory>
+#include <utility>
+#include "./Property.hpp"
 
 namespace zany {
 
 class Connection: public std::enable_shared_from_this<Connection> {
 public:
+	Connection() = default;
+	template<typename ...Ts>
+	Connection(Ts &&...__info): info{std::forward<Ts>(__info)...} {}
 	virtual ~Connection() = default;
 
 	using SharedInstance = std::shared_ptr<Connection>;
@@ -21,13 +26,18 @@ public:
 	 * Called when data is available
 	 * 
 	 */
-	virtual void	onDataAvailable(std::size_t len) = 0;
+	//virtual void	onDataAvailable(std::size_t len) = 0;
 
 	/** 
 	 * Write data on the socket
 	 * 
 	 */
-	virtual void	write(const char *, std::size_t len) = 0;
+	virtual std::size_t	write(const char *, std::size_t len) = 0;
+
+	struct {
+		std::string 	ip;
+		std::uint16_t	port;
+	}									info;
 };
 
 }

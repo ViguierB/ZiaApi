@@ -78,8 +78,10 @@ public:
 	inline bool	operator==(Entity const &other) const;
 	inline bool	operator!=(Entity const &other) const;
 
-	inline Entity	&operator[](std::string const &key);
-	inline Entity	&operator[](unsigned idx);
+	inline auto		operator[](std::string const &key) -> Entity&;
+	inline auto		operator[](std::string const &key) const -> const Entity&;
+	inline auto		operator[](unsigned idx) -> Entity&;
+	inline auto		operator[](unsigned idx) const -> const Entity&;
 	inline Entity	&push(Entity const &obj);
 	inline void		merge(Entity const &toAdd, OnConflitFunc const &onConflit = _basicOnConfit);
 	

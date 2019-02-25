@@ -7,21 +7,22 @@
 
 #pragma once
 
-#if defined(ZANY_ISUNIX)
-# include <dlfcn.h>
-#else
-# include <windows.h>
-#endif
-
 #include <unordered_map>
 #include <string>
 #include <memory>
 #include <tuple>
 #include <array>
 #include <iterator>
-#include "Pipeline.hpp"
-#include "Entity.hpp"
-#include "Platform.hpp"
+#include "./Pipeline.hpp"
+#include "./Entity.hpp"
+#include "./Platform.hpp"
+#include "./Connection.hpp"
+
+#if defined(ZANY_ISUNIX)
+# include <dlfcn.h>
+#else
+# include <windows.h>
+#endif
 
 namespace zany {
 
@@ -68,7 +69,7 @@ public:
 		/*
 		** Create a custom pipeline instance
 		*/
-		virtual void		coreBeginPipeline(zany::Socket) {}
+		virtual void		coreBeginPipeline(zany::Connection &) {}
 
 		/*
 		** Get the module name

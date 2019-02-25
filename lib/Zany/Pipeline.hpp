@@ -20,6 +20,8 @@
 #include "./Property.hpp"
 #include "./ThreadPool.hpp"
 #include "./HttpBase.hpp"
+#include "./Context.hpp"
+#include "./Connection.hpp"
 
 /** \namespace zany
  * 
@@ -196,11 +198,11 @@ public:
 	 */
 	class Instance {
 	public:
+		Instance() = delete;
+		Instance(Connection::SharedInstance &co_): connection(co_) {};
 		Instance(Instance const &other) = delete;
 		Instance(Instance &&other) = default;
 		Instance &operator=(Instance const &other) = delete;
-
-		inline void setContext(InterfaceContext &ctx) { _ctx = &ctx; }
 
 		/**
 		 * Allow data sharing between different hooks
@@ -210,31 +212,24 @@ public:
 		/**
 		** Request header
 		*/
-		HttpRequest	request;
+		HttpRequest		request;
 
 		/**
 		** Response header
 		*/
 		HttpResponse	response;
-	protected:
-		Instance() = default;
 
-		InterfaceContext	*_ctx;
+		/**
+		 * Connection
+		 */
+		Connection::SharedInstance	connection;
 
-		friend Pipeline;
+		Context						context;
 	};
-	inline auto &createInstance() { return _instances.emplace_back(Instance()); }
-
+	static inline auto	makePipelineInstance(Connection::SharedInstance co) { return std::make_shared<Instance>(co); }
 	inline void	linkThreadPool(ThreadPool &pool) { _pool = &pool; }
-	inline auto getThreadPool() -> auto & { return *_pool; }
-	inline auto getThreadPool() const -> const auto & { return *_pool; }
-
-	/** \fn startPipeline(zany::Socket fd, Args &&...)
-	 * 
-	 * Create an instance of a Pipeline
-	 */
-	template<typename T = zany::Context, typename ...Args>
-	inline void	startPipeline(zany::Socket fd, Args &&...);
+	inline auto	getThreadPool() -> auto & { return *_pool; }
+	inline auto	getThreadPool() const -> const auto & { return *_pool; }
 
 	/** \fn getHookSet()
 	 * 
@@ -253,7 +248,6 @@ public:
 		{ getHookSet<H>().execute(instance); }
 private:
 	ThreadPool												*_pool;
-	std::list<Instance>										_instances;
 	std::unordered_map<Hooks::Decl, std::unique_ptr<Set>>	_sets;
 };
 

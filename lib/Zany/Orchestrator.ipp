@@ -15,10 +15,12 @@ Orchestrator::Orchestrator(InterfaceContext &ctx): _ctx(ctx) {
 	ctx.addTask(std::bind(&Orchestrator::_routine, this));
 }
 
-void	Orchestrator::loadModule(std::string const &filename, std::function<void(Loader::AbstractModule &)> const &callback, std::function<void(std::exception)> const &errorCallback) {
+void	Orchestrator::loadModule(std::string const &filename, std::function<void(Loader::AbstractModule &)> const &callback, std::function<void(zany::Loader::Exception)> const &errorCallback) {
 	addSafeHandler([this, filename, callback, errorCallback] {
 		try {
 			auto &module = _loader.load(filename);
+
+			module.linkOrchestrator(*this);
 			if (module.isCoreModule()) {
 				if (_coreModule != nullptr) {
 					throw std::runtime_error("Cannot load a core module when another is already loaded !");
@@ -26,7 +28,7 @@ void	Orchestrator::loadModule(std::string const &filename, std::function<void(Lo
 				_coreModule = &module;
 			}
 			_ctx.addTask(std::bind(callback, std::ref(module)));
-		} catch (std::exception &e) {
+		} catch (zany::Loader::Exception &e) {
 			if (errorCallback != nullptr)
 				_ctx.addTask(std::bind(errorCallback, e));
 		}
@@ -34,7 +36,7 @@ void	Orchestrator::loadModule(std::string const &filename, std::function<void(Lo
 	waitForSafeHandlersFinished();
 }
 
-void	Orchestrator::unloadModule(Loader::AbstractModule const &module, std::function<void()> const &callback, std::function<void(std::exception)> const &errorCallback) {
+void	Orchestrator::unloadModule(Loader::AbstractModule const &module, std::function<void()> const &callback, std::function<void(zany::Loader::Exception)> const &errorCallback) {
 	addSafeHandler([this, &module, callback, errorCallback] {
 		try {
 			if (_coreModule == &module) {
@@ -43,7 +45,7 @@ void	Orchestrator::unloadModule(Loader::AbstractModule const &module, std::funct
 			
 			_loader.unload(module);
 			_ctx.addTask(callback);
-		} catch (std::exception &e) {
+		} catch (zany::Loader::Exception &e) {
 			if (errorCallback != nullptr)
 				_ctx.addTask(std::bind(errorCallback, e));
 		}
@@ -51,14 +53,16 @@ void	Orchestrator::unloadModule(Loader::AbstractModule const &module, std::funct
 	waitForSafeHandlersFinished();
 }
 
-void	Orchestrator::startPipeline(zany::Socket sockFd) {
+void	Orchestrator::startPipeline(zany::Connection::SharedInstance connection) {
+	auto pipeline = Pipeline::makePipelineInstance(connection);
+
 	if (_safeIsComputing == false) {
-		if (_coreModule == nullptr) {
-			throw std::runtime_error("Core module never set !!");
-		}
-		_coreModule->coreBeginPipeline(sockFd);
+		this->_pline.getThreadPool().runTask([this, pipeline] {
+			onPipelineReady(*pipeline);
+			
+		});
 	} else {
-		_waitSafeConnections.push_back(sockFd);
+		_waitSafeConnections.push_back(pipeline);
 	}
 }
 
@@ -75,8 +79,10 @@ void	Orchestrator::waitForSafeHandlersFinished() {
 		}
 		_safeIsComputing = false;
 		std::this_thread::yield();
-		for (auto fd: _waitSafeConnections) {
-			startPipeline(fd);
+		for (auto &pipeline: _waitSafeConnections) {
+			this->_pline.getThreadPool().runTask([this, pipeline] {
+				onPipelineReady(*pipeline);
+			});
 		}
 		_waitSafeConnections.clear();
 	});

@@ -131,7 +131,7 @@ bool	Entity::operator!=(Entity const &other) const
 Entity	&Entity::operator[](std::string const &key)
 {
 	if (_data == nullptr || _data->getType() != Type::OBJ) {
-		throw std::runtime_error("Json : Error : "
+		throw std::runtime_error("zany::Entity: Error: "
 			"Cannot use this Entity");
 	}
 	return getData<Object>().get()[key];
@@ -140,10 +140,40 @@ Entity	&Entity::operator[](std::string const &key)
 Entity	&Entity::operator[](unsigned idx)
 {
 	if (_data == nullptr || _data->getType() != Type::ARR) {
-		throw std::runtime_error("Json : Error : "
+		throw std::runtime_error("zany::Entity: Error: "
 			"Cannot use this Entity");
 	}
 	return getData<Array>().get()[idx];
+}
+
+const Entity	&Entity::operator[](std::string const &key) const
+{
+	if (_data == nullptr || _data->getType() != Type::OBJ) {
+		throw std::runtime_error("zany::Entity: Error: "
+			"Cannot use this Entity");
+	}
+	auto it = value<Object>().find(key);
+	if (it != value<Object>().end()) {
+		return it->second;
+	} else {
+		throw std::runtime_error("zany::Entity: Error: "
+			"Cannot use this Entity");
+	}
+}
+
+const Entity	&Entity::operator[](unsigned idx) const
+{
+	if (_data == nullptr || _data->getType() != Type::ARR) {
+		throw std::runtime_error("zany::Entity: Error: "
+			"Cannot use this Entity");
+	}
+	auto &v = value<Array>();
+	if (v.size() < idx) {
+		return v.at(idx);
+	} else {
+		throw std::runtime_error("zany::Entity: Error: "
+			"Cannot use this Entity");
+	}
 }
 
 bool	Entity::isObject(void) const
@@ -179,7 +209,7 @@ bool	Entity::isNull(void) const
 Entity	&Entity::push(Entity const &obj)
 {
 	if (_data == nullptr || _data->getType() != Type::ARR) {
-		throw std::runtime_error("Json : Error : "
+		throw std::runtime_error("zany::Entity: Error: "
 			"Cannot use this Entity");
 	}
 	auto &arr = getData<Array>().get();
@@ -221,7 +251,7 @@ void	Entity::merge(Entity const &toAdd, OnConflitFunc const &onConflit)
 			}
 		}
 	} else {
-		throw std::runtime_error("Json : Error : "
+		throw std::runtime_error("zany::Entity: Error: "
 			"Cannot use this Entity");
 	}
 }
@@ -247,19 +277,19 @@ Entity::_basicOnConfit(std::string const &, Entity &first, Entity &second)
 ***********************************************/
 std::string	AbstractData::toString(void) const
 {
-	throw std::runtime_error("Json : Error : "
+	throw std::runtime_error("zany::Entity: Error: "
 		"Cannot use this Entity");
 }
 
 double		AbstractData::toNumber(void) const
 {
-	throw std::runtime_error("Json : Error : "
+	throw std::runtime_error("zany::Entity: Error: "
 		"Cannot use this Entity");
 }
 
 bool		AbstractData::toBool(void) const
 {
-	throw std::runtime_error("Json : Error : "
+	throw std::runtime_error("zany::Entity: Error: "
 		"Cannot use this Entity");
 }
 
@@ -409,7 +439,7 @@ bool		String::toBool(void) const
 	} else if (STRCASECMP(this->c_str(), "false") == 0) {
 		return false;
 	} else {
-		throw std::runtime_error("Json : Error : "
+		throw std::runtime_error("zany::Entity: Error: "
 			"Cannot use this Entity");
 	}
 }

@@ -109,14 +109,4 @@ void	Pipeline::Set::execute(Pipeline::Instance &pipeline) {
 	}
 }
 
-template<typename T, typename ...Args>
-void	Pipeline::startPipeline(zany::Socket fd, Args &&...args) {
-	auto ctx = std::make_shared<T>(args...);
-	auto &instance = createInstance();
-	instance.setContext(*ctx);
-	_pool->runTask([&] {
-		this->getHookSet<Hooks::BEFORE_HANDLE_REQUEST>().execute(instance);
-	});
-}
-
 }
