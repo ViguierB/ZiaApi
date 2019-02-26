@@ -95,8 +95,7 @@ public:
 		HOOKSFACTORY(
 			BEFORE_HANDLE_REQUEST,	/**< Hooks intervening before every request */
 			ON_HANDLE_REQUEST,	/**< Hooks intervening just after a request (e.g. TLS decryption) */
-			ON_DATA_AVAILABLE,	/**< Hooks intervening when you handle the data request (e.g. HTTP, JSON parsing...) */
-			ON_DATA_END,		/**< Hooks intervening to interpret the request */
+			ON_DATA_READY,		/**< Hooks intervening to interpret the request */
 			BEFORE_HANDLE_RESPONSE,	/**< Hooks intervening when you create the data you need for the response */
 			ON_HANDLE_RESPONSE,	/**< Hooks intervening when you format the data of the response (e.g. HTTP formating) */
 			BEFORE_CLOSE_SOCKET	/**< Hooks intervening to encode the response (e.g. TLS encoding) */

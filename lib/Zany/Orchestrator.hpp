@@ -114,7 +114,6 @@ public:
 	/*
 	** Exectué quand une pipeline est prete, permet le debut de l'execution des hooks par le serveur (doit etre override et threadsafe)
 	*/
-	virtual void	onPipelineReady(zany::Pipeline::Instance &) = 0;
 
 	/*
 	** Lie une threadpool au gestionnaire de pipeline
@@ -132,6 +131,7 @@ protected:
 	Pipeline			_pline;
 	Loader				_loader;
 private:
+	inline void	_onPipelineReady(zany::Pipeline::Instance &);
 	inline void	_routine();
 
 	void												*__routine;

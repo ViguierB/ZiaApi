@@ -53,6 +53,16 @@ void	Orchestrator::loadModule(std::string const &filename, std::function<void(Lo
 	}
 }
 
+void	Orchestrator::_onPipelineReady(zany::Pipeline::Instance &instance) {
+	instance.context.addTask([&] {
+		zany::Pipeline::Hooks::forEach([&] (auto hook) {
+			this->getPipeline().getHookSet(hook).execute(instance);
+		});
+		instance.context.stop();
+	});
+	instance.context.run();
+}
+
 void	Orchestrator::unloadModule(Loader::AbstractModule const &module, std::function<void()> const &callback, std::function<void(zany::Loader::Exception)> const &errorCallback) {
 	const auto lbd = [this, &module, callback, errorCallback] {
 		try {
@@ -89,7 +99,7 @@ void	Orchestrator::startPipeline(zany::Connection::SharedInstance connection) {
 
 	if (_safeIsComputing == false) {
 		this->_pline.getThreadPool().runTask([this, pipeline] {
-			onPipelineReady(*pipeline);
+			_onPipelineReady(*pipeline);
 		});
 	} else {
 		_waitSafeConnections.push_back(pipeline);
@@ -111,7 +121,7 @@ void	Orchestrator::waitForSafeHandlersFinished() {
 		std::this_thread::yield();
 		for (auto &pipeline: _waitSafeConnections) {
 			this->_pline.getThreadPool().runTask([this, pipeline] {
-				onPipelineReady(*pipeline);
+				_onPipelineReady(*pipeline);
 			});
 		}
 		_waitSafeConnections.clear();

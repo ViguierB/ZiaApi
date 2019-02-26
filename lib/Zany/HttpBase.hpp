@@ -39,7 +39,8 @@ struct HttpRequest: public HttpBaseRequest {
 };
 
 struct HttpResponse: public HttpBaseRequest {
-	unsigned int 	status;
+	unsigned int 	status = 200;
+	bool			done = false;
 };
 
 }
