@@ -227,6 +227,8 @@ public:
 		Entity						serverConfig = zany::Entity::Type::NUL;
 
 		Context						context;
+
+		std::uintptr_t				writerID = 0;
 	};
 	static inline auto	makePipelineInstance(Connection::SharedInstance co) { return std::make_shared<Instance>(co); }
 	inline void	linkThreadPool(ThreadPool &pool) { _pool = &pool; }

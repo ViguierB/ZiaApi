@@ -18,8 +18,12 @@ struct HttpBaseRequest {
 
 struct HttpRequest: public HttpBaseRequest {
 	enum class RequestMethods: std::uint8_t {
-#		undef	DELETE
-#		undef	ERROR
+#		if defined(DELETE)
+#		 undef	DELETE
+#		endif /* DELETE */
+#		if defined(ERROR)
+#		 undef	ERROR
+#		endif /* ERROR */
 		ERROR = 0,
 		GET = 42,
 		HEAD,
@@ -32,10 +36,11 @@ struct HttpRequest: public HttpBaseRequest {
 		PATCH
 	};
 
-	RequestMethods	method;
-	std::string		host;
-	std::uint16_t	port;
-	std::string		path;
+	RequestMethods									method;
+	std::string										host;
+	std::uint16_t									port;
+	std::string										path;
+	std::unordered_map<std::string, std::string>	params;
 };
 
 struct HttpResponse: public HttpBaseRequest {

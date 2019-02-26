@@ -55,6 +55,10 @@ void	Orchestrator::loadModule(std::string const &filename, std::function<void(Lo
 
 void	Orchestrator::_onPipelineReady(zany::Pipeline::Instance &instance) {
 	instance.context.addTask([&] {
+		if (instance.connection->stream().peek() == EOF) {
+			instance.context.stop();
+			return;
+		}
 		zany::Pipeline::Hooks::forEach([&] (auto hook) {
 			this->getPipeline().getHookSet(hook).execute(instance);
 		});
