@@ -30,6 +30,9 @@ struct HttpRequest: public HttpBaseRequest {
 	};
 
 	RequestMethods	method;
+	std::string		host;
+	std::uint16_t	port;
+	std::string		path;
 };
 
 struct HttpResponse: public HttpBaseRequest {

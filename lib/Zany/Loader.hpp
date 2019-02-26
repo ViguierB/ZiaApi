@@ -64,12 +64,14 @@ public:
 		/*
 		** Return if is a master module (like ssl module)
 		*/
-		virtual bool		isCoreModule() { return false; }
+		virtual bool		isACoreModule() { return false; }
 
 		/*
 		** Create a custom pipeline instance
 		*/
 		virtual void		coreBeginPipeline(zany::Connection &) {}
+
+		virtual void		startListening(std::vector<std::uint16_t> &ports) {}
 
 		/*
 		** Get the module name

@@ -21,6 +21,7 @@
 #include "./ThreadPool.hpp"
 #include "./HttpBase.hpp"
 #include "./Context.hpp"
+#include "./Entity.hpp"
 #include "./Connection.hpp"
 
 /** \namespace zany
@@ -210,7 +211,7 @@ public:
 		std::unordered_map<std::string, Property>	properties;
 
 		/**
-		** Request header
+		** Request header404
 		*/
 		HttpRequest		request;
 
@@ -223,6 +224,8 @@ public:
 		 * Connection
 		 */
 		Connection::SharedInstance	connection;
+
+		Entity						serverConfig = zany::Entity::Type::NUL;
 
 		Context						context;
 	};

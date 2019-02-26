@@ -11,7 +11,7 @@ namespace zany {
 class HttpHeader {
 public:
 	HttpHeader() = default;
-	HttpHeader(std::string const &data): data(data){}
+	HttpHeader(std::string const &data): data(data) {}
 
 	inline bool		isNumber();
 	inline double	getNumber();

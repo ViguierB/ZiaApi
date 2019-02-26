@@ -17,6 +17,7 @@
 #include <deque>
 #include <mutex>
 #include <atomic>
+#include <type_traits>
 #include <iostream>
 #include "./Platform.hpp"
 #include "./Pipeline.hpp"
@@ -35,8 +36,18 @@ namespace zany {
  * Orchestrator class for controlling the project
  */
 class Orchestrator {
+private:
+	template<typename T>
+	union _CastUtility {
+		_CastUtility(void (T::*_routine)()): routine(_routine) {}
+		_CastUtility(void *_ptr): ptr(_ptr) {}
+
+		void			(T::*routine)();
+		void				*ptr;
+	};
 public:
-	inline Orchestrator(InterfaceContext &ctx);
+	template<typename T = Orchestrator, typename std::enable_if<std::is_base_of<Orchestrator, T>::value, int>::type = 0>
+	inline Orchestrator(InterfaceContext &ctx, void (T::*member)() = nullptr);
 	Orchestrator(Orchestrator const &other) = delete;
 	Orchestrator(Orchestrator &&other) = default;
 	Orchestrator &operator=(Orchestrator const &other) = delete;
@@ -101,11 +112,6 @@ public:
 	virtual void	reload() { std::cerr << "Reload: Not implemented!\n"; }
 
 	/*
-	** Fonction de routine, elle est executé a chaque tour de boucle (doit etre override)
-	*/
-	virtual	void	routine() = 0;
-
-	/*
 	** Exectué quand une pipeline est prete, permet le debut de l'execution des hooks par le serveur (doit etre override et threadsafe)
 	*/
 	virtual void	onPipelineReady(zany::Pipeline::Instance &) = 0;
@@ -119,6 +125,8 @@ public:
 	inline auto	&getLoader() const { return _loader; }
 	inline auto &getPipeline() { return _pline; }
 	inline auto const &getPipeline() const { return _pline; }
+	inline auto &getContext() { return _ctx; }
+	inline auto *getCore() { return _coreModule; }
 protected:
 	InterfaceContext	&_ctx;
 	Pipeline			_pline;
@@ -126,6 +134,7 @@ protected:
 private:
 	inline void	_routine();
 
+	void												*__routine;
 	Loader::AbstractModule								*_coreModule = nullptr;
 	std::deque<std::function<void()>>					_safeHdls;
 	std::mutex											_safeMtx;

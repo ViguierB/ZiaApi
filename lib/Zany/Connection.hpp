@@ -22,22 +22,12 @@ public:
 
 	using SharedInstance = std::shared_ptr<Connection>;
 
-	/** 
-	 * Called when data is available
-	 * 
-	 */
-	//virtual void	onDataAvailable(std::size_t len) = 0;
-
-	/** 
-	 * Write data on the socket
-	 * 
-	 */
-	virtual std::size_t	write(const char *, std::size_t len) = 0;
+	virtual std::iostream &stream() = 0;
 
 	struct {
 		std::string 	ip;
 		std::uint16_t	port;
-	}									info;
+	}	info;
 };
 
 }
