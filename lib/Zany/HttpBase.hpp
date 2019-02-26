@@ -18,15 +18,18 @@ struct HttpBaseRequest {
 
 struct HttpRequest: public HttpBaseRequest {
 	enum class RequestMethods: std::uint8_t {
+#		undef	DELETE
+#		undef	ERROR
+		ERROR = 0,
 		GET = 42,
 		HEAD,
 		POST,
 		PUT,
-		_DELETE_, // DELETE is a keyword for MSVC... 
+		DELETE,
 		TRACE,
 		OPTIONS,
 		CONNECT,
-		PATCH,
+		PATCH
 	};
 
 	RequestMethods	method;

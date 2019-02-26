@@ -13,7 +13,6 @@
 namespace zany {
 static constexpr bool isUnix = true;
 static constexpr bool isWindows = false;
-using Socket = int;
 }
 
 #else
@@ -24,7 +23,6 @@ using Socket = int;
 namespace zany {
 static constexpr bool isUnix = false;
 static constexpr bool isWindows = true;
-using Socket = SOCKET;
 
 inline std::string GetLastErrorAsString() {
     DWORD   errorMessageID = ::GetLastError();
