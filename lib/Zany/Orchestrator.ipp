@@ -54,16 +54,25 @@ void	Orchestrator::loadModule(std::string const &filename, std::function<void(Lo
 }
 
 void	Orchestrator::_onPipelineReady(zany::Pipeline::Instance &instance) {
-	instance.context.addTask([&] {
-		if (instance.connection->stream().peek() == EOF) {
-			instance.context.stop();
-			return;
-		}
+	static std::array<zany::Pipeline::Hooks::Decl, zany::Pipeline::Hooks::count()>
+		hooks;
+	static int	ii = 0;
+
+	if (ii == 0) {
 		zany::Pipeline::Hooks::forEach([&] (auto hook) {
-			this->getPipeline().getHookSet(hook).execute(instance);
+			hooks.at(ii++) = hook;
 		});
-		instance.context.stop();
-	});
+	}
+
+	std::function<void(int)> next = [&] (std::size_t i) {
+		this->getPipeline().getHookSet(hooks[i]).execute(instance);
+		if (++i < zany::Pipeline::Hooks::count())
+			instance.context.addTask(std::bind(next, i));
+		else
+			instance.context.stop();
+	};
+
+	instance.context.addTask(std::bind(next, 0));
 	instance.context.run();
 }
 
@@ -103,7 +112,14 @@ void	Orchestrator::startPipeline(zany::Connection::SharedInstance connection) {
 
 	if (_safeIsComputing == false) {
 		this->_pline.getThreadPool().runTask([this, pipeline] {
-			_onPipelineReady(*pipeline);
+			try {
+				_onPipelineReady(*pipeline);
+			} catch (std::exception &e) {
+				PipelineExecutionError	error(e.what());
+				_ctx.addTask([this, error] {
+					onPipelineThrow(error);
+				});
+			}
 		});
 	} else {
 		_waitSafeConnections.push_back(pipeline);

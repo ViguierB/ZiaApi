@@ -19,6 +19,7 @@
 #include <atomic>
 #include <type_traits>
 #include <iostream>
+#include <exception>
 #include "./Platform.hpp"
 #include "./Pipeline.hpp"
 #include "./Loader.hpp"
@@ -111,6 +112,7 @@ public:
 	 */
 	virtual void	reload() { std::cerr << "Reload: Not implemented!\n"; }
 
+
 	/*
 	** Exectué quand une pipeline est prete, permet le debut de l'execution des hooks par le serveur (doit etre override et threadsafe)
 	*/
@@ -127,6 +129,13 @@ public:
 	inline auto &getContext() { return _ctx; }
 	inline auto *getCore() { return _coreModule; }
 protected:
+	class	PipelineExecutionError: public std::runtime_error {
+	public:
+		template<typename T> PipelineExecutionError(T const &message): std::runtime_error(message) {}
+	};
+
+	virtual void	onPipelineThrow(PipelineExecutionError const &exception) = 0;
+
 	InterfaceContext	&_ctx;
 	Pipeline			_pline;
 	Loader				_loader;
