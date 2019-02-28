@@ -37,10 +37,12 @@ struct HttpRequest: public HttpBaseRequest {
 	};
 
 	RequestMethods									method;
+	std::string										methodString;
 	std::string										host;
 	std::uint16_t									port;
 	std::string										path;
-	std::unordered_map<std::string, std::string>	params;
+	std::string										fullQuery;
+	std::unordered_map<std::string, std::string>	query;
 };
 
 struct HttpResponse: public HttpBaseRequest {
