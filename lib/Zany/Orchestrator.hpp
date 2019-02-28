@@ -80,7 +80,9 @@ public:
 	 * 
 	 * Start an instance of a Pipeline after the accept of a connexion
 	 */
-	inline void startPipeline(zany::Connection::SharedInstance co);
+	inline auto startPipeline(
+		zany::Connection::SharedInstance co,
+		std::function<void(zany::Pipeline::Instance&)> const &beforeAll = nullptr);
 
 	/** \fn waitForSafeHandlersFinished()
 	 * 
